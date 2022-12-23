@@ -1,0 +1,76 @@
+
+def somma(integer a, b): float
+{
+	return a+b;
+}
+
+def sottrazione(float a, b): float
+{
+	return a-b;
+}
+
+def moltiplicazione(float a,b): float
+{
+	return a * b;
+}
+
+def divisione (float a,b): float
+{
+	return a / b;
+}
+
+def selectOp(out integer op): void
+{
+	op <-- "Inserisci l'operazione (1 somma, 2 sott, 3 molt, 4 div)";
+	return ;
+}
+
+def askContinue(out boolean continue):	void 
+{
+	integer risposta;
+	risposta <-- "Vuoi continuare? (1 Si, 0 no)";
+	if(risposta = 1){
+		continue << true;
+	}else{
+		continue << false;
+	}
+	return ;
+}
+
+def askNumbers(out float n1, n2): void
+{
+	n1 <-- "Inserisci il primo numero: ";
+	n2 <-- "Inserisci il secondo numero: ";
+}
+
+start: def starter(): void
+{
+	integer operazione;
+	boolean continua;
+	float num1, num2;
+	continua << true;
+	while(continua) loop {
+		selectOp(operazione);
+		askNumbers(num1, num2);
+		if(operazione = 1){
+			(somma(num1, num2)) -->;
+		}else{
+			if(operazione = 2){
+				(differenza(num1, num2)) -->;
+			}else{
+				if(operazione = 3){
+					(moltiplicazione(num1, num2)) -->;
+				}else{
+					(divisione(num1,num2)) -->;
+				}
+			}
+		}
+		askContinue(continua);
+		
+	
+	}
+	
+	
+	
+}
+

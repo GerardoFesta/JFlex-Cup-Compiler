@@ -1,0 +1,183 @@
+import java.util.*;
+import nodes.*;
+
+/* Terminals Declarations */
+terminal MAIN, IF, VAR, ELSE, WHILE, INT, FLOAT, STRING, BOOL, CHAR, VOID, DEF, OUT, FOR, TO, LOOP, TRUE, FALSE, AND, OR, NOT, RETURN;
+terminal LPAR, RPAR, LBRAC, RBRAC, COLON, COMMA, SEMI, PIPE, READ, WRITE, WRITELN, LT, GT, NE, LE, GE, EQ, ASSIGN, PLUS, MINUS, TIMES, DIV, POW, STR_CONCAT;
+terminal String ID, CHAR_CONST, INTEGER_CONST, STRING_CONST, REAL_CONST, UMINUS;
+
+nonterminal Program Program;
+nonterminal VarDecl VarDecl;
+nonterminal ArrayList<VarDecl> VarDeclList;
+nonterminal FunDecl FunDecl, MainFunDecl;
+nonterminal ArrayList<Declaration> DeclList;
+nonterminal Type Type, TypeOrVoid;
+nonterminal ArrayList<IdInit> IdInitList, IdInitObblList;
+nonterminal ArrayList<IDLeaf> IdList;
+nonterminal Expr Expr;
+nonterminal ArrayList<Expr> ExprList;
+nonterminal ConstLeaf Const;
+nonterminal ParDecl ParDecl;
+nonterminal ArrayList<ParDecl> ParamDeclList, NonEmptyParamDeclList;
+nonterminal Body Body, NoStatBody;
+nonterminal Stat Stat;
+nonterminal ArrayList<Stat> StatList;
+nonterminal IfStat IfStat;
+nonterminal ForStat ForStat;
+nonterminal ReadStat ReadStat;
+nonterminal WriteStat WriteStat;
+nonterminal AssignStat AssignStat;
+nonterminal WhileStat WhileStat;
+nonterminal FunCall FunCall;
+nonterminal Body Else;
+
+
+precedence left OR;
+precedence left AND;
+precedence right NOT;
+precedence nonassoc EQ, NE, LT, LE, GT, GE;
+precedence left STR_CONCAT;
+precedence left PLUS;
+precedence left MINUS;
+precedence left TIMES;
+precedence left DIV;
+precedence right POW;
+precedence left LPAR;
+precedence left RPAR;
+precedence right UMINUS;
+//precedence left COMMA; //o right?
+
+start with Program;
+
+Program ::= DeclList:d1 MainFunDecl:m1 DeclList:d2 {:RESULT = new Program(d1,(FunDecl)m1,d2); :};
+
+DeclList ::= VarDecl:vard DeclList:dlist {:RESULT = dlist; RESULT.add(vard); :}
+            | FunDecl:fund DeclList:dlist {:RESULT = dlist; RESULT.add(fund); :}
+            | /* empty */ {:RESULT = new ArrayList<Declaration>(); :} ;
+
+MainFunDecl ::= MAIN FunDecl:fund {: RESULT = fund; RESULT.setMain(true); :};
+
+VarDecl ::= Type:t IdInitList:idlist SEMI {: RESULT = new VarDecl(t, idlist);:}
+	      | VAR IdInitObblList:idlist SEMI {: RESULT = new VarDecl(new Type("var"), idlist);:};
+
+Type ::= INT    {:RESULT= new Type("int");:}
+        | BOOL  {:RESULT= new Type("bool");:}
+        | FLOAT {:RESULT= new Type("float");:}
+        | STRING {:RESULT= new Type("string");:}
+        | CHAR {:RESULT= new Type("char");:} ;
+
+IdInitList ::= ID:id   {:RESULT = new ArrayList<IdInit>(); RESULT.add(new IdInit(new IDLeaf(id.toString()))); :}
+	| IdInitList:idinitl COMMA ID:id {:RESULT=idinitl; RESULT.add(new IdInit(new IDLeaf(id.toString())));:}
+	| ID:id ASSIGN Expr:val {:RESULT = new ArrayList<IdInit>(); RESULT.add(new IdInit(new IDLeaf(id.toString()), val )); :}
+	| IdInitList:idinitl COMMA ID:id ASSIGN Expr:val {:RESULT=idinitl; RESULT.add(new IdInit(new IDLeaf(id.toString()), val));:};
+
+IdInitObblList ::= ID:id ASSIGN Const:c {:RESULT= new ArrayList<IdInit>(); RESULT.add(new IdInit(new IDLeaf(id.toString()), c));:}
+	| IdInitObblList:idinitol COMMA ID:id ASSIGN Const:c {:RESULT=idinitol; RESULT.add(new IdInit(new IDLeaf(id.toString()), c));:};
+
+Const ::= INTEGER_CONST:c {:RESULT= new ConstLeaf("integer_const", c.toString());:}
+        | REAL_CONST:c   {:RESULT= new ConstLeaf("real_const", c.toString());:}
+        | TRUE             {:RESULT= new ConstLeaf("boolean_const", "true");:}
+        | FALSE         {:RESULT= new ConstLeaf("boolean_const", "false");:}
+        | STRING_CONST:c {:RESULT= new ConstLeaf("string_const", c.toString());:}
+        | CHAR_CONST:c {:RESULT= new ConstLeaf("char_const", c.toString());:};
+
+FunDecl ::= DEF ID:id LPAR ParamDeclList:l1 RPAR COLON TypeOrVoid:t Body:b {:RESULT = new FunDecl(new IDLeaf(id.toString()), l1, t, b);:} ;
+
+/* MODIFICA:
+ StatList viene utilizzata solo nel body. Precedentemente, statList poteva essere vuota solo con stat vuoto
+ In questa versione, body ha due produzioni, una delle quali non include statList, ed è stata tolta la possibilità a stat (utilizato
+ solo in statList) di andare a vuoto.
+ Dovrebbe essere equivalente
+*/
+Body ::= LBRAC VarDeclList:l1 StatList:l2 RBRAC {:RESULT = new Body(l1, l2);:}
+        | NoStatBody:b {:RESULT = b;:};
+
+NoStatBody ::= LBRAC VarDeclList:l1 RBRAC {:RESULT = new Body(l1, new ArrayList<Stat>());:};
+
+ParamDeclList ::= /*empty */ {:RESULT = new ArrayList<ParDecl>();:}
+	| NonEmptyParamDeclList:l {:RESULT = l;:};
+
+NonEmptyParamDeclList ::= ParDecl:p {: RESULT = new ArrayList<ParDecl>(); RESULT.add(p); :}
+	| NonEmptyParamDeclList:l PIPE ParDecl:p {: RESULT = l; RESULT.add(p); :};
+
+ParDecl ::= Type:t IdList:l {:RESULT = new ParDecl(t, l, false);:}
+	| OUT Type:t IdList:l {:RESULT = new ParDecl(t, l, true);:};
+
+TypeOrVoid ::= Type:t {:RESULT = t; :}
+| VOID {:RESULT = new Type("void"); :};
+
+VarDeclList ::= /* empty */ {:RESULT = new ArrayList<VarDecl>();:}
+	| VarDecl:v VarDeclList:l {:RESULT = l; RESULT.add(0,v); :}; //0 è per aggiungere in testa
+
+StatList ::= Stat:s {:RESULT = new ArrayList<Stat>(); RESULT.add(s);:}
+	 | Stat:s StatList:l {:RESULT = l; RESULT.add(0,s); :};
+
+
+
+Stat ::= IfStat:s {:RESULT = s;:}
+	| ForStat:s {:RESULT = s;:}
+	| ReadStat:s SEMI {:RESULT = s;:}
+	| WriteStat:s SEMI {:RESULT = s;:}
+	| AssignStat:s SEMI {:RESULT = s;:}
+    | WhileStat:s {:RESULT = s;:}
+	| FunCall:f SEMI {:RESULT = new FunCallStatement(f);:}
+	| RETURN Expr:e SEMI {:RESULT = new ReturnStatement(e); :}
+	| RETURN SEMI {:RESULT = new ReturnStatement(); :};
+
+IfStat ::= IF Expr:ex Body:b Else:e {:RESULT = new IfStat(ex,b,e); :};
+
+Else ::= /* empty */ {:RESULT = null;:}
+	| ELSE Body:b {:RESULT = b;:};
+
+WhileStat ::= WHILE Expr:e LOOP Body:b {:RESULT = new WhileStat(e,b);:};
+
+ForStat ::= FOR ID:id ASSIGN INTEGER_CONST:c1 TO INTEGER_CONST:c2 LOOP Body:b {:RESULT = new ForStat(new IDLeaf(id.toString()),c1,c2,b);:};
+
+ReadStat ::= IdList:l READ STRING_CONST:c {:RESULT = new ReadStat(l,c);:}
+	|  IdList:l READ {:RESULT = new ReadStat(l);:};
+
+
+IdList ::= ID:id {:RESULT = new ArrayList<IDLeaf>(); RESULT.add(new IDLeaf(id.toString()));:}
+	| ID:id COMMA IdList:l {:RESULT = l; RESULT.add(new IDLeaf(id.toString()));:};
+
+WriteStat ::=  LPAR ExprList:l RPAR WRITE {:RESULT = new WriteStat(l, 0);:}
+	|  LPAR ExprList:l RPAR WRITELN {:RESULT = new WriteStat(l, 1);:};
+
+AssignStat ::=  IdList:l1 ASSIGN ExprList:l2 {:RESULT = new AssignStat(l1,l2);:};
+
+FunCall ::= ID:id LPAR ExprList:l RPAR {:RESULT = new FunCall(new IDLeaf(id.toString()),l);:}
+	| ID:id LPAR RPAR {:RESULT = new FunCall(new IDLeaf(id.toString()),null);:};
+
+ExprList ::= Expr:e {:RESULT = new ArrayList<Expr>(); RESULT.add(e);:}
+	| Expr:e COMMA ExprList:l {:RESULT = l; RESULT.add(0, e);:}; //0 è per la posizione
+
+
+/* Modifica: le prime produzioni originali di Expr sono quelle di const, per evitare conflitti, Expr va in const */
+Expr ::= INTEGER_CONST:c {:RESULT= new ConstLeaf("integer_const", c.toString());:}
+    | REAL_CONST:c   {:RESULT= new ConstLeaf("real_const", c.toString());:}
+    | TRUE             {:RESULT= new ConstLeaf("boolean_const", "true");:}
+    | FALSE         {:RESULT= new ConstLeaf("boolean_const", "false");:}
+    | STRING_CONST:c {:RESULT= new ConstLeaf("string_const", c.toString());:}
+    | CHAR_CONST:c {:RESULT= new ConstLeaf("char_const", c.toString());:}
+    | ID:id {:RESULT= new IDLeaf(id.toString());:}
+    | FunCall:f {:RESULT = f;:}
+	| Expr:e1  PLUS Expr:e2 {:RESULT = new BinaryOperation(e1, "plus", e2);:}
+	| Expr:e1  MINUS Expr:e2 {:RESULT = new BinaryOperation(e1, "minus", e2);:}
+	| Expr:e1  TIMES Expr:e2 {:RESULT = new BinaryOperation(e1, "times", e2);:}
+	| Expr:e1  DIV Expr:e2 {:RESULT = new BinaryOperation(e1, "div", e2);:}
+	| Expr:e1  AND Expr:e2 {:RESULT = new BinaryOperation(e1, "and", e2);:}
+	| Expr:e1 POW Expr:e2 {:RESULT = new BinaryOperation(e1, "pow", e2);:}
+	| Expr:e1 STR_CONCAT Expr:e2 {:RESULT = new BinaryOperation(e1, "str_concat", e2);:}
+	| Expr:e1  OR Expr:e2 {:RESULT = new BinaryOperation(e1, "or", e2);:}
+	| Expr:e1  GT Expr:e2 {:RESULT = new BinaryOperation(e1, "gt", e2);:}
+	| Expr:e1  GE Expr:e2 {:RESULT = new BinaryOperation(e1, "ge", e2);:}
+	| Expr:e1  LT Expr:e2 {:RESULT = new BinaryOperation(e1, "lt", e2);:}
+	| Expr:e1  LE Expr:e2 {:RESULT = new BinaryOperation(e1, "le", e2);:}
+	| Expr:e1  EQ Expr:e2 {:RESULT = new BinaryOperation(e1, "eq", e2);:}
+	| Expr:e1  NE Expr:e2 {:RESULT = new BinaryOperation(e1, "ne", e2);:}
+	| MINUS Expr:e1 {:RESULT = new UnaryOperation("minus",e1);:} %prec UMINUS
+	| NOT Expr:e1 {:RESULT = new UnaryOperation("not",e1);:}
+	| LPAR Expr:e1 RPAR {:RESULT = new UnaryOperation("par", e1);:};
+
+
+
