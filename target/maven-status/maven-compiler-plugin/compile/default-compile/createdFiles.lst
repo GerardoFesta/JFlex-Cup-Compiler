@@ -1,10 +1,14 @@
 esercitazione5\parser$CUP$parser$actions.class
 nodes\FunDecl.class
+tables\entries\MethodEntry.class
 nodes\IdInit.class
 nodes\WhileStat.class
+tables\entries\VarEntry.class
 nodes\ForStat.class
+tables\entries\Param.class
 nodes\Declaration.class
 esercitazione5\parser.class
+tables\entries\TabEntry.class
 nodes\Expr.class
 nodes\VarDecl.class
 nodes\Program.class
@@ -14,7 +18,6 @@ nodes\FunCallStatement.class
 nodes\FunCall.class
 nodes\ConstLeaf.class
 nodes\IDLeaf.class
-Tester.class
 nodes\WriteStat.class
 nodes\ParDecl.class
 nodes\ReturnStatement.class

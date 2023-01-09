@@ -81,8 +81,14 @@ public class XmlVisitor implements Visitor{
         ArrayList<Declaration> declList1 = program.getDeclList1();
         for(Declaration d:declList1) programEl.appendChild((Element) d.accept(this));
         FunDecl main_f = program.getMainFunDecl();
+        /*
         programEl.appendChild(document.createElement("START"));
         programEl.appendChild((Element) main_f.accept(this));
+         */
+        Element main_f_el= (Element) main_f.accept(this);
+        main_f_el.appendChild(document.createElement("START"));
+        programEl.appendChild(main_f_el);
+
         ArrayList<Declaration> declList2 = program.getDeclList2();
         for(Declaration d:declList2) programEl.appendChild((Element) d.accept(this));
         document.appendChild(programEl);

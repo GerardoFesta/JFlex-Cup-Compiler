@@ -91,7 +91,7 @@ CHAR_CONST = \'[^"'"]\'
     stringTable.put("or", symbol(sym.OR));
     stringTable.put("not", symbol(sym.NOT));
     stringTable.put("return", symbol(sym.RETURN));
-
+    stringTable.put("then", symbol(sym.THEN));
 
 
 %init}
@@ -118,6 +118,7 @@ CHAR_CONST = \'[^"'"]\'
     "<"                 { return symbol(sym.LT); }
     ">"                 { return symbol(sym.GT); }
     "<>"             { return symbol(sym.NE); }
+    "!="             { return symbol(sym.NE); }
     "<="                { return symbol(sym.LE); }
     ">="                { return symbol(sym.GE); }
     "="                 { return symbol(sym.EQ); }

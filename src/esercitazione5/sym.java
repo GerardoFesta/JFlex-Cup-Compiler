@@ -52,6 +52,7 @@ public interface sym {
   public static final int WHILE = 6;
   public static final int STR_CONCAT = 47;
   public static final int FLOAT = 8;
+  public static final int THEN = 54;
   public static final int REAL_CONST = 52;
   public static final int NE = 37;
   public static final int LPAR = 24;
@@ -116,7 +117,8 @@ public interface sym {
   "INTEGER_CONST",
   "STRING_CONST",
   "REAL_CONST",
-  "UMINUS"
+  "UMINUS",
+  "THEN"
   };
 }
 

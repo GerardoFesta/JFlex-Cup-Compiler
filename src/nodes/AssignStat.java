@@ -1,5 +1,6 @@
 package nodes;
 
+import java_cup.runtime.SyntaxTreeDFS;
 import visitors.Visitor;
 
 import java.util.ArrayList;

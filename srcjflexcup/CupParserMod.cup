@@ -4,7 +4,7 @@ import nodes.*;
 /* Terminals Declarations */
 terminal MAIN, IF, VAR, ELSE, WHILE, INT, FLOAT, STRING, BOOL, CHAR, VOID, DEF, OUT, FOR, TO, LOOP, TRUE, FALSE, AND, OR, NOT, RETURN;
 terminal LPAR, RPAR, LBRAC, RBRAC, COLON, COMMA, SEMI, PIPE, READ, WRITE, WRITELN, LT, GT, NE, LE, GE, EQ, ASSIGN, PLUS, MINUS, TIMES, DIV, POW, STR_CONCAT;
-terminal String ID, CHAR_CONST, INTEGER_CONST, STRING_CONST, REAL_CONST, UMINUS;
+terminal String ID, CHAR_CONST, INTEGER_CONST, STRING_CONST, REAL_CONST, UMINUS, THEN;
 
 nonterminal Program Program;
 nonterminal VarDecl VarDecl;
@@ -45,14 +45,14 @@ precedence right POW;
 precedence left LPAR;
 precedence left RPAR;
 precedence right UMINUS;
-//precedence left COMMA; //o right?
+
 
 start with Program;
 
 Program ::= DeclList:d1 MainFunDecl:m1 DeclList:d2 {:RESULT = new Program(d1,(FunDecl)m1,d2); :};
 
-DeclList ::= VarDecl:vard DeclList:dlist {:RESULT = dlist; RESULT.add(vard); :}
-            | FunDecl:fund DeclList:dlist {:RESULT = dlist; RESULT.add(fund); :}
+DeclList ::= VarDecl:vard DeclList:dlist {:RESULT = dlist; RESULT.add(0,vard); :}
+            | FunDecl:fund DeclList:dlist {:RESULT = dlist; RESULT.add(0,fund); :}
             | /* empty */ {:RESULT = new ArrayList<Declaration>(); :} ;
 
 MainFunDecl ::= MAIN FunDecl:fund {: RESULT = fund; RESULT.setMain(true); :};
@@ -124,7 +124,7 @@ Stat ::= IfStat:s {:RESULT = s;:}
 	| RETURN Expr:e SEMI {:RESULT = new ReturnStatement(e); :}
 	| RETURN SEMI {:RESULT = new ReturnStatement(); :};
 
-IfStat ::= IF Expr:ex Body:b Else:e {:RESULT = new IfStat(ex,b,e); :};
+IfStat ::= IF Expr:ex THEN Body:b Else:e {:RESULT = new IfStat(ex,b,e); :};
 
 Else ::= /* empty */ {:RESULT = null;:}
 	| ELSE Body:b {:RESULT = b;:};

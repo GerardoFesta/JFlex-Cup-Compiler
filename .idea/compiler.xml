@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="festa-foudal_es5" />
+        <module name="PROVA_ES4" />
       </profile>
     </annotationProcessing>
   </component>

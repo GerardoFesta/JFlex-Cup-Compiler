@@ -29,7 +29,7 @@ def askContinue(out boolean continue):	void
 {
 	integer risposta;
 	risposta <-- "Vuoi continuare? (1 Si, 0 no)";
-	if(risposta = 1){
+	if(risposta = 1) then {
 		continue << true;
 	}else{
 		continue << false;
@@ -52,13 +52,13 @@ start: def starter(): void
 	while(continua) loop {
 		selectOp(operazione);
 		askNumbers(num1, num2);
-		if(operazione = 1){
+		if(operazione = 1) then{
 			(somma(num1, num2)) -->;
 		}else{
-			if(operazione = 2){
+			if(operazione = 2) then{
 				(differenza(num1, num2)) -->;
 			}else{
-				if(operazione = 3){
+				if(operazione = 3) then {
 					(moltiplicazione(num1, num2)) -->;
 				}else{
 					(divisione(num1,num2)) -->;
