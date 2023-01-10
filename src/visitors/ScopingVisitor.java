@@ -1,11 +1,14 @@
 package visitors;
 
 import nodes.*;
+import tables.entries.MethodEntry;
+import tables.entries.Param;
 import tables.entries.TabEntry;
 import tables.entries.VarEntry;
 import tables.stacktables.SymbolTable;
 import tables.stacktables.TablesContainer;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -15,6 +18,10 @@ public class ScopingVisitor implements Visitor{
     TablesContainer tablesContainer;
 
 
+    public ScopingVisitor() {
+        this.stack = new Stack<SymbolTable>();
+        tablesContainer = new TablesContainer();
+    }
 
     public SymbolTable enterScope(){
         tableCounter++;
@@ -29,11 +36,29 @@ public class ScopingVisitor implements Visitor{
         return table;
     }
 
+    public SymbolTable getCurrentSymTable(){
+        SymbolTable currentScope = stack.pop();
+        stack.push(currentScope);
+        return currentScope;
+    }
+
     public void addVarId(VarEntry entry){
         SymbolTable currentScope = stack.pop();
 
         if(currentScope.lookup(entry.getEntryName())!=null)
             throw new Error("Variabile " + entry.getEntryName() + " già dichiarata");
+        else
+            currentScope.add(entry.getEntryName(), entry);
+
+        stack.push(currentScope);
+
+    }
+
+    public void addFunId(MethodEntry entry){
+        SymbolTable currentScope = stack.pop();
+
+        if(currentScope.lookup(entry.getEntryName())!=null)
+            throw new Error("Funzione con nome " + entry.getEntryName() + " già dichiarata");
         else
             currentScope.add(entry.getEntryName(), entry);
 
@@ -54,7 +79,8 @@ public class ScopingVisitor implements Visitor{
         for(Declaration d: programNode.getDeclList2()){
             d.accept(this);
         }
-        exitScope();
+        SymbolTable tabella_prodotta = exitScope();
+        programNode.setSymtable(tabella_prodotta);
 
         //DA SOSTITUIRE CON SECONDA PASSATA
         return null;
@@ -67,10 +93,9 @@ public class ScopingVisitor implements Visitor{
         VarEntry entry= null;
         if(tipo.equals("var")){}//Non so se qui o dopo, penso dopo. se ho var x = a; e poi ho int a = 10, va fatta type inference?
         ArrayList<IdInit> idInitList= nodo.getIdInitList();
-        //qui si potrebbe scendere a fare la visita di ogni idInit, ma il tipo come me lo tengo?
         for(IdInit idInit:idInitList) {
-            String simbolo = (String) idInit.getId().accept(this);
-            entry = new VarEntry("variable",tipo,simbolo,false);
+            entry = (VarEntry) idInit.accept(this);
+            entry.setEntryType(tipo);
             addVarId(entry);
         }
 
@@ -78,9 +103,15 @@ public class ScopingVisitor implements Visitor{
         return null;
     }
 
+
     @Override
     public Object visit(Type nodo) {return nodo.getTipo();}
 
+    @Override
+    public Object visit(IdInit nodo) {
+        String simbolo = (String) nodo.getId().accept(this);
+        return new VarEntry("variable", "", simbolo,false);
+    }
 
     @Override
     public Object visit(IDLeaf nodo) {return nodo.getId();}
@@ -88,9 +119,97 @@ public class ScopingVisitor implements Visitor{
 
     @Override
     public Object visit(FunDecl nodo) {
+        MethodEntry entry = null;
+        ArrayList<Param> paramlist;
+        String nome_f = (String) nodo.getId().accept(this);
+        String tipo_f = (String) nodo.getType().accept(this);
+        boolean isMain = nodo.isMain();
+        ArrayList<ParDecl> pardeclList = nodo.getParDeclList();
+        entry = new MethodEntry("fun", tipo_f, nome_f, isMain);
+        for(ParDecl pardecl:pardeclList){
+            paramlist = (ArrayList<Param>) pardecl.accept(this);
+            for(Param parametro: paramlist){
+                entry.addParameter(parametro);
+            }
+
+        }
+        addFunId(entry);
+
+        //creazione tabella della funzione, che poi passo a body e che ha i parametri all'interno
+        enterScope();
+        VarEntry varEntry= null;
+        for(ParDecl pardecl:pardeclList){
+            paramlist = (ArrayList<Param>) pardecl.accept(this);
+            for(Param parametro:paramlist){
+                varEntry=new VarEntry("var", parametro.getType(), parametro.getName(), parametro.isOut());
+            }
+            //ATTENZIONE A GESTIONE OUT
+            addVarId(varEntry);
+        }
+        Body body = nodo.getBody();
+        body.setSymtable(getCurrentSymTable());
+        SymbolTable symtab_aggiornata = (SymbolTable) body.accept(this);
+        nodo.setSymtable(symtab_aggiornata);
+
         return null;
     }
 
+    @Override
+    public Object visit(ParDecl nodo) {
+        String tipo = (String) nodo.getTipo().accept(this);
+        ArrayList<IDLeaf> idlist= nodo.getIdList();
+        Param parametro;
+        ArrayList<Param> paramList = new ArrayList<Param>();
+        for(IDLeaf id:idlist){
+            String nome= (String) id.accept(this);
+            parametro = new Param(nome,tipo, nodo.isOut());
+            paramList.add(parametro);
+        }
+        return paramList;
+    }
+
+    @Override
+    public Object visit(Body nodo) {
+        if(nodo.getSymtable()==null){
+            enterScope();
+        }
+        ArrayList<VarDecl> varDecls= nodo.getVarDeclList();
+        for (VarDecl decl:varDecls) {decl.accept(this);}
+        ArrayList<Stat> stats= nodo.getStatList();
+        for (Stat stat:stats){stat.accept(this);}
+
+
+        SymbolTable bodySymTable = exitScope();
+        nodo.setSymtable(bodySymTable);
+        return bodySymTable;
+    }
+
+    @Override
+    public Object visit(ForStat nodo) {
+        String iteratore = (String) nodo.getId().accept(this);
+        VarEntry entry = new VarEntry("var", "int", iteratore, false);
+        enterScope();
+        addVarId(entry);
+        SymbolTable currentSymTable = getCurrentSymTable();
+        Body body = nodo.getBody();
+        body.setSymtable(currentSymTable);
+        SymbolTable symtab_aggiornata = (SymbolTable) body.accept(this);
+        nodo.setSymtable(symtab_aggiornata);
+        return null;
+    }
+
+    @Override
+    public Object visit(IfStat nodo) {
+        nodo.getBody().accept(this);
+        if(nodo.getElseBody()!=null) nodo.getElseBody().accept(this);
+        return null;
+    }
+
+    @Override
+    public Object visit(WhileStat nodo) {
+        nodo.getBody().accept(this);
+        return null;
+    }
 
     @Override
     public Object visit(AssignStat nodo) {
@@ -102,20 +221,14 @@ public class ScopingVisitor implements Visitor{
         return null;
     }
 
-    @Override
-    public Object visit(Body nodo) {
-        return null;
-    }
+
 
     @Override
     public Object visit(ConstLeaf nodo) {
         return null;
     }
 
-    @Override
-    public Object visit(ForStat nodo) {
-        return null;
-    }
+
 
     @Override
     public Object visit(FunCall nodo) {
@@ -126,25 +239,6 @@ public class ScopingVisitor implements Visitor{
     public Object visit(FunCallStatement nodo) {
         return null;
     }
-
-
-
-    @Override
-    public Object visit(IdInit nodo) {
-        return null;
-    }
-
-
-    @Override
-    public Object visit(IfStat nodo) {
-        return null;
-    }
-
-    @Override
-    public Object visit(ParDecl nodo) {
-        return null;
-    }
-
 
 
     @Override
@@ -165,10 +259,7 @@ public class ScopingVisitor implements Visitor{
 
 
 
-    @Override
-    public Object visit(WhileStat nodo) {
-        return null;
-    }
+
 
     @Override
     public Object visit(WriteStat nodo) {

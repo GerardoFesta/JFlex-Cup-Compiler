@@ -1,5 +1,6 @@
 package nodes;
 
+import tables.stacktables.SymbolTable;
 import visitors.Visitor;
 
 import java.util.ArrayList;
@@ -42,4 +43,8 @@ public class Program {
     ArrayList<Declaration> declList1;
     ArrayList<Declaration> declList2;
     FunDecl mainFunDecl;
+
+    SymbolTable symtable = null;
+
+    public void setSymtable(SymbolTable table){symtable=table;}
 }

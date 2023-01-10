@@ -1,5 +1,6 @@
 package nodes;
 
+import tables.stacktables.SymbolTable;
 import visitors.Visitor;
 
 import java.util.ArrayList;
@@ -52,6 +53,9 @@ public class FunDecl extends Declaration {
     Body body;
     boolean main;
 
+    SymbolTable symtable = null;
+
+
     public Object accept(Visitor v){
         return v.visit(this);
     }
@@ -63,4 +67,7 @@ public class FunDecl extends Declaration {
     public boolean isMain() {
         return main;
     }
+
+
+    public void setSymtable(SymbolTable table){symtable=table;}
 }

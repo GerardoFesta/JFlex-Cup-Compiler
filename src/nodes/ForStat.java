@@ -1,5 +1,6 @@
 package nodes;
 
+import tables.stacktables.SymbolTable;
 import visitors.Visitor;
 
 public class ForStat extends Stat{
@@ -50,5 +51,10 @@ public class ForStat extends Stat{
     IDLeaf id;
     String int_con1,int_con2;
     Body body;
+
+    SymbolTable symtable = null;
+
+    public void setSymtable(SymbolTable table){symtable=table;}
+    public SymbolTable getSymtable(){return symtable;}
 
 }

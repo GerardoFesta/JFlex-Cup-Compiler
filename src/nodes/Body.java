@@ -1,5 +1,6 @@
 package nodes;
 
+import tables.stacktables.SymbolTable;
 import visitors.Visitor;
 
 import java.util.ArrayList;
@@ -32,4 +33,10 @@ public class Body {
 
     ArrayList<VarDecl> varDeclList;
     ArrayList<Stat> statList;
+
+    SymbolTable symtable = null;
+
+    public void setSymtable(SymbolTable table){symtable=table;}
+    public SymbolTable getSymtable(){return symtable;}
+
 }

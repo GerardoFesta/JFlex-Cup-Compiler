@@ -14,6 +14,7 @@ public class SymbolTable {
 
     public SymbolTable(String label) {
         this.tempLabel = label;
+        this.table = new HashMap<String, TabEntry>();
     }
 
     public SymbolTable() {

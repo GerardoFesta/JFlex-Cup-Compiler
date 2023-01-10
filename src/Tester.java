@@ -1,6 +1,7 @@
 import de.jflex.example.Lexer;
 import esercitazione5.parser;
 import nodes.Program;
+import visitors.ScopingVisitor;
 import visitors.XmlVisitor;
 
 import java.io.FileInputStream;
@@ -16,10 +17,10 @@ public class Tester {
         parser p = new parser(new Lexer(reader));
 
 
-        XmlVisitor xmlVisitor = new XmlVisitor();
+        ScopingVisitor scopingVisitor = new ScopingVisitor();
         Program program = (Program) p.parse().value;
 
-        program.accept(xmlVisitor);
-        xmlVisitor.save("test.xml");
+        program.accept(scopingVisitor);
+
     }
 }
