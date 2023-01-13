@@ -1,11 +1,13 @@
 def somma(float a | float b): float {
+    moltViaSomma(a+1,2+2+2);
     return a+b;
 }
 
 def moltViaSomma(float a | float b): float {
     float risultato << 0;
     float risultato_dec << 0;
-    integer dec_cont << 0;
+    var dec_cont << 0, mimmo<<1.0;
+
     while b>1 loop{
         if b < 1 then{
             dec_cont << dec_cont + 1;
@@ -16,6 +18,7 @@ def moltViaSomma(float a | float b): float {
         }
 
     }
+
     while b!= 0 loop{
         if (b < 1) then{
             b << b*10;

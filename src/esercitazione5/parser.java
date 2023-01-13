@@ -684,7 +684,7 @@ class CUP$parser$actions {
 		int cleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int cright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		ConstLeaf c = (ConstLeaf)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		RESULT= new ArrayList<IdInit>(); RESULT.add(new IdInit(new IDLeaf(id.toString()), c));
+		RESULT= new ArrayList<IdInit>(); RESULT.add(new IdInit(new IDLeaf(id.toString()), c, true)); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("IdInitObblList",9, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -702,7 +702,7 @@ class CUP$parser$actions {
 		int cleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int cright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		ConstLeaf c = (ConstLeaf)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		RESULT=idinitol; RESULT.add(new IdInit(new IDLeaf(id.toString()), c));
+		RESULT=idinitol; RESULT.add(new IdInit(new IDLeaf(id.toString()), c, true));
               CUP$parser$result = parser.getSymbolFactory().newSymbol("IdInitObblList",9, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1641,7 +1641,7 @@ class CUP$parser$actions {
 		int e1left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int e1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		Expr e1 = (Expr)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
-		RESULT = new UnaryOperation("par", e1);
+		RESULT = e1;
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",11, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

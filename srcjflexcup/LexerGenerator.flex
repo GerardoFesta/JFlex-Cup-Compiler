@@ -61,7 +61,7 @@ ID = [:jletter:] [:jletterdigit:]*
 Digit = [0-9]
 NoZeroDigit = [1-9]
 INTEGER_CONST = ({NoZeroDigit}{Digit}*) | 0
-REAL_CONST = {INTEGER_CONST}.{Digit}+
+REAL_CONST = {INTEGER_CONST}\.{Digit}+
 CHAR_CONST = \'[^"'"]\'
 
 

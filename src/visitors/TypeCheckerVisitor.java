@@ -1,0 +1,312 @@
+package visitors;
+
+import nodes.*;
+import tables.OperationRules;
+import tables.entries.MethodEntry;
+import tables.entries.Param;
+import tables.entries.TabEntry;
+import tables.entries.VarEntry;
+import tables.stacktables.SymbolTable;
+import tables.stacktables.TablesContainer;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Stack;
+
+public class TypeCheckerVisitor implements Visitor{
+    private int tableCounter = 0;
+    Stack<SymbolTable> stack;
+    TablesContainer tablesContainer;
+    MethodEntry current_function;
+
+
+    public TypeCheckerVisitor() {
+        this.stack = new Stack<SymbolTable>();
+        tablesContainer = new TablesContainer();
+    }
+
+    private void loadScope(SymbolTable tab){
+        stack.push(tab);
+    }
+
+    private void exitScope(){
+        stack.pop();
+    }
+
+    private TabEntry lookup (String simbolo){
+        Stack<SymbolTable> clone = (Stack<SymbolTable>) stack.clone();
+        SymbolTable tab;
+        TabEntry result;
+        while(!clone.empty()){
+            tab = clone.pop();
+            result = tab.lookup(simbolo);
+            if(result!= null) return result;
+        }
+        throw new Error(""+simbolo+" non è stato dichiarato");
+
+    }
+
+    @Override
+    public Object visit(Program nodo) {
+        loadScope(nodo.getSymtable());
+        ArrayList<Declaration> dichiarazioni1 = nodo.getDeclList1();
+        for(Declaration d:dichiarazioni1){
+            d.accept(this);
+        }
+
+        return null;
+    }
+
+    @Override
+    public Object visit(VarDecl nodo) {
+        ArrayList<IdInit> idInits = nodo.getIdInitList();
+        //non ho bisogno di aggiungere tipo agli id, perché già fatto nella prima passata
+        for(IdInit idInit:idInits){
+            idInit.accept(this);
+        }
+        //se non ho errori nelle idinit, allora il nodo è ok
+        return null;
+    }
+
+    @Override
+    public Object visit(IdInit nodo) {
+        Expr expr = nodo.getExpr();
+        if(expr!=null) {
+            String simbolo = (String) nodo.getId().accept(this);
+            VarEntry riga = (VarEntry) lookup(simbolo);
+            String tipo_expr = (String) expr.accept(this);
+            if(riga.getEntryType().equals("float") && tipo_expr.equals("int"))
+                tipo_expr="float";
+            if(!tipo_expr.equals(riga.getEntryType()))
+                throw new Error("Tipo "+tipo_expr+" e "+riga.getEntryType()+" non matchano");
+
+        }
+
+        return null;
+    }
+
+    //EXPR
+    @Override
+    public Object visit(IDLeaf nodo) {
+        VarEntry entry = (VarEntry) lookup(nodo.getId());
+        return entry.getEntryType();
+    }
+
+    @Override
+    public Object visit(ConstLeaf nodo) {
+        return OperationRules.getConstType(nodo.getConstType());
+    }
+
+    @Override
+    public Object visit(BinaryOperation nodo) {
+        String tipo1 = (String) nodo.getValue1().accept(this);
+        String tipo2 = (String) nodo.getValue2().accept(this);
+        if(OperationRules.getOpType(nodo.getOpType(), tipo1, tipo2) == null){
+            throw new Error ("Cannot run operation "+nodo.getOpType()+ " with types: "+tipo1+" and "+tipo2);
+        }
+        return OperationRules.getOpType(nodo.getOpType(), tipo1, tipo2);
+    }
+
+    @Override
+    public Object visit(UnaryOperation nodo) {
+        String tipo_expr = (String) nodo.getValue().accept(this);
+        if(OperationRules.getOpType(nodo.getOpType(), tipo_expr) == null){
+            throw new Error ("Cannot run operation "+nodo.getOpType()+ " with type: "+tipo_expr);
+        }
+        return OperationRules.getOpType(nodo.getOpType(), tipo_expr);
+    }
+
+    @Override
+    public Object visit(FunCall nodo) {
+        String nome_fun= nodo.getId().getId();
+        TabEntry tab = lookup(nome_fun);
+        if(!tab.getEntrySpec().equals("fun"))
+            throw new Error(nome_fun+" is not a function");
+        MethodEntry fun = (MethodEntry) tab;
+        ArrayList<Param> formal_params = fun.getParameters();
+        ArrayList<Expr> actual_params = nodo.getExprList();
+        if(formal_params.size()!= actual_params.size())
+            throw new Error(nome_fun+": expected "+ formal_params.size()+" parameters, got "+actual_params.size());
+
+        int i=0;
+        Param param;
+        String tipo_param;
+        Expr expr;
+        String tipo_expr;
+        while(i< formal_params.size()){
+            param = formal_params.get(i);
+            tipo_param = param.getType();
+            expr = actual_params.get(i);
+            tipo_expr = (String) expr.accept(this);
+            if(param.isOut() && !expr.getTipo().equals("IDLeaf"))
+                throw new Error(nome_fun+": parameter "+param.getName()+" must be a variable, cannot be const");
+            if(!tipo_expr.equals(tipo_param))
+                throw new Error(nome_fun+": parameter "+param.getName()+"-"+tipo_param+" cannot be used with "+tipo_expr);
+
+            i++;
+        }
+
+        return fun.getEntryType();
+    }
+    //FINE EXPR
+
+
+
+    @Override
+    public Object visit(FunDecl nodo) {
+        String nome_fun = nodo.getId().getId();
+        current_function = (MethodEntry) lookup(nome_fun);
+        nodo.getBody().accept(this);
+        current_function = null;
+        return null;
+    }
+
+    @Override
+    public Object visit(Body nodo) {
+        loadScope(nodo.getSymtable());
+        ArrayList<VarDecl> varDecls = nodo.getVarDeclList();
+        for (VarDecl varDecl:varDecls){
+            varDecl.accept(this);
+        }
+
+        ArrayList<Stat> statlist = nodo.getStatList();
+        for(Stat stat:statlist){
+            stat.accept(this);
+        }
+
+        exitScope();
+        return null;
+    }
+
+    @Override
+    public Object visit(ReturnStatement nodo) {
+        if(nodo.getExpr()!=null) {
+            String tipo_ritorno = (String) nodo.getExpr().accept(this);
+            if (!tipo_ritorno.equals(current_function.getEntryType()))
+                throw new Error("Returned "+tipo_ritorno+" in function "+current_function.getEntryName()+" while expecting "+current_function.getEntryType());
+        }else{
+            if(!current_function.getEntryType().equals("void"))
+                throw new Error("Returned void  in function "+current_function.getEntryName()+" while expecting "+current_function.getEntryType());
+        }
+        return null;
+    }
+
+
+    @Override
+    public Object visit(AssignStat nodo) {
+        ArrayList<IDLeaf> idlist = nodo.getIdList();
+        ArrayList<Expr> exprList = nodo.getExprList();
+        if(idlist.size()!= exprList.size())
+            throw new Error("Size in assignment doesn't match");
+        int i=0;
+        TabEntry t;
+        String tipo_expr;
+        while(i< idlist.size()){
+            t = lookup(idlist.get(i).getId());
+            if(!t.getEntrySpec().equals("variable"))
+                throw new Error(t.getEntryName()+" is not a variable");
+            tipo_expr= (String) exprList.get(i).accept(this);
+            if(!tipo_expr.equals(t.getEntryType()))
+                throw new Error("Type mismatch in assignment. Cannot assign to "+t.getEntryName()+"-"+t.getEntryType()+" an expression of type "+tipo_expr);
+            i++;
+        }
+        return null;
+    }
+
+    @Override
+    public Object visit(ForStat nodo) {
+        return nodo.getBody().accept(this);
+    }
+
+    @Override
+    public Object visit(IfStat nodo) {
+        String tipo_expr = (String) nodo.getExpr().accept(this);
+        if(!tipo_expr.equals("bool"))
+            throw new Error("Expression in If statement must be a boolean. Instaed got "+tipo_expr);
+
+        nodo.getBody().accept(this);
+        if(nodo.getElseBody()!=null)
+            nodo.getElseBody().accept(this);
+        return null;
+    }
+
+
+    @Override
+    public Object visit(WhileStat nodo) {
+        String tipo_expr = (String) nodo.getExpr().accept(this);
+        if(!tipo_expr.equals("bool"))
+            throw new Error("Expression in While statement must be a boolean. Instaed got "+tipo_expr);
+
+        nodo.getBody().accept(this);
+        return null;
+    }
+
+
+
+    @Override
+    public Object visit(FunCallStatement nodo) {
+        String nome_fun= nodo.getId().getId();
+        TabEntry tab = lookup(nome_fun);
+        if(!tab.getEntrySpec().equals("fun"))
+            throw new Error(nome_fun+" is not a function");
+        MethodEntry fun = (MethodEntry) tab;
+        ArrayList<Param> formal_params = fun.getParameters();
+        ArrayList<Expr> actual_params = nodo.getExprList();
+        if(formal_params.size()!= actual_params.size())
+            throw new Error(nome_fun+": expected "+ formal_params.size()+" parameters, got "+actual_params.size());
+
+        int i=0;
+        Param param;
+        String tipo_param;
+        Expr expr;
+        String tipo_expr;
+        while(i< formal_params.size()){
+            param = formal_params.get(i);
+            tipo_param = param.getType();
+            expr = actual_params.get(i);
+            tipo_expr = (String) expr.accept(this);
+            if(param.isOut() && !expr.getTipo().equals("IDLeaf"))
+                throw new Error(nome_fun+": parameter "+param.getName()+" must be a variable, cannot be const");
+            if(!tipo_expr.equals(tipo_param))
+                throw new Error(nome_fun+": parameter "+param.getName()+"-"+tipo_param+" cannot be used with "+tipo_expr);
+
+            i++;
+        }
+
+        return null;
+    }
+
+
+
+
+
+
+
+    @Override
+    public Object visit(ParDecl nodo) {
+        return null;
+    }
+
+
+
+    @Override
+    public Object visit(ReadStat nodo) {
+        return null;
+    }
+
+
+
+    @Override
+    public Object visit(Type nodo) {
+        return nodo.getTipo();
+    }
+
+
+
+
+
+    @Override
+    public Object visit(WriteStat nodo) {
+        return null;
+    }
+}

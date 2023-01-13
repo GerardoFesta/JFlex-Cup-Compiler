@@ -11,6 +11,7 @@ import tables.stacktables.TablesContainer;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Stack;
+import tables.OperationRules;
 
 public class ScopingVisitor implements Visitor{
     private int tableCounter = 0;
@@ -91,11 +92,13 @@ public class ScopingVisitor implements Visitor{
     public Object visit(VarDecl nodo) {
         String tipo= (String) nodo.getType().accept(this);
         VarEntry entry= null;
-        if(tipo.equals("var")){}//Non so se qui o dopo, penso dopo. se ho var x = a; e poi ho int a = 10, va fatta type inference?
-        ArrayList<IdInit> idInitList= nodo.getIdInitList();
-        for(IdInit idInit:idInitList) {
+
+        ArrayList<IdInit> idInitList = nodo.getIdInitList();
+        for (IdInit idInit : idInitList) {
             entry = (VarEntry) idInit.accept(this);
-            entry.setEntryType(tipo);
+            if(!tipo.equals("var")) {
+                entry.setEntryType(tipo);
+            }
             addVarId(entry);
         }
 
@@ -110,8 +113,18 @@ public class ScopingVisitor implements Visitor{
     @Override
     public Object visit(IdInit nodo) {
         String simbolo = (String) nodo.getId().accept(this);
+        if(nodo.isObbl()){
+            String tipo_const = (String) nodo.getExpr().accept(this); //sicuramente è una costante, perché il tipo è var
+            return new VarEntry("variable", tipo_const, simbolo,false);
+        }
         return new VarEntry("variable", "", simbolo,false);
     }
+
+    @Override
+    public Object visit(ConstLeaf nodo) {
+        return OperationRules.getConstType(nodo.getConstType());
+    }
+
 
     @Override
     public Object visit(IDLeaf nodo) {return nodo.getId();}
@@ -223,10 +236,7 @@ public class ScopingVisitor implements Visitor{
 
 
 
-    @Override
-    public Object visit(ConstLeaf nodo) {
-        return null;
-    }
+
 
 
 

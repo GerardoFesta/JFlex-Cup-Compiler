@@ -47,4 +47,8 @@ public class Program {
     SymbolTable symtable = null;
 
     public void setSymtable(SymbolTable table){symtable=table;}
+    public SymbolTable getSymtable() {
+        return symtable;
+    }
+
 }

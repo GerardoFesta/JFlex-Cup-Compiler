@@ -9,6 +9,13 @@ public class IdInit {
     public IdInit(IDLeaf id, Expr e) {
         this.id = id;
         this.expr=e;
+
+    }
+
+    public IdInit(IDLeaf id, Expr e, boolean obbl) {
+        this.id = id;
+        this.expr=e;
+        this.obbl=obbl;
     }
 
     public IDLeaf getId() {
@@ -33,4 +40,14 @@ public class IdInit {
 
     IDLeaf id;
     Expr expr;
+
+    boolean obbl= false;
+
+    public boolean isObbl() {
+        return obbl;
+    }
+
+    public void setObbl(boolean obbl) {
+        this.obbl = obbl;
+    }
 }

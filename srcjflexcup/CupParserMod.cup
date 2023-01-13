@@ -71,8 +71,8 @@ IdInitList ::= ID:id   {:RESULT = new ArrayList<IdInit>(); RESULT.add(new IdInit
 	| ID:id ASSIGN Expr:val {:RESULT = new ArrayList<IdInit>(); RESULT.add(new IdInit(new IDLeaf(id.toString()), val )); :}
 	| IdInitList:idinitl COMMA ID:id ASSIGN Expr:val {:RESULT=idinitl; RESULT.add(new IdInit(new IDLeaf(id.toString()), val));:};
 
-IdInitObblList ::= ID:id ASSIGN Const:c {:RESULT= new ArrayList<IdInit>(); RESULT.add(new IdInit(new IDLeaf(id.toString()), c));:}
-	| IdInitObblList:idinitol COMMA ID:id ASSIGN Const:c {:RESULT=idinitol; RESULT.add(new IdInit(new IDLeaf(id.toString()), c));:};
+IdInitObblList ::= ID:id ASSIGN Const:c {:RESULT= new ArrayList<IdInit>(); RESULT.add(new IdInit(new IDLeaf(id.toString()), c, true)); :}
+	| IdInitObblList:idinitol COMMA ID:id ASSIGN Const:c {:RESULT=idinitol; RESULT.add(new IdInit(new IDLeaf(id.toString()), c, true));:};
 
 Const ::= INTEGER_CONST:c {:RESULT= new ConstLeaf("integer_const", c.toString());:}
         | REAL_CONST:c   {:RESULT= new ConstLeaf("real_const", c.toString());:}
@@ -177,7 +177,7 @@ Expr ::= INTEGER_CONST:c {:RESULT= new ConstLeaf("integer_const", c.toString());
 	| Expr:e1  NE Expr:e2 {:RESULT = new BinaryOperation(e1, "ne", e2);:}
 	| MINUS Expr:e1 {:RESULT = new UnaryOperation("minus",e1);:} %prec UMINUS
 	| NOT Expr:e1 {:RESULT = new UnaryOperation("not",e1);:}
-	| LPAR Expr:e1 RPAR {:RESULT = new UnaryOperation("par", e1);:};
+	| LPAR Expr:e1 RPAR {:RESULT = e1;:};
 
 
 
