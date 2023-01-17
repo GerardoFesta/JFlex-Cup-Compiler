@@ -1212,7 +1212,7 @@ class CUP$parser$actions {
 		int lleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int lright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		ArrayList<IDLeaf> l = (ArrayList<IDLeaf>)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		RESULT = l; RESULT.add(new IDLeaf(id.toString()));
+		RESULT = l; RESULT.add(0, new IDLeaf(id.toString()));
               CUP$parser$result = parser.getSymbolFactory().newSymbol("IdList",10, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

@@ -3,18 +3,21 @@ package nodes;
 import visitors.Visitor;
 
 public abstract class Expr extends Object {
-    public Expr(String tipo) {
-        this.tipo=tipo;
+    public Expr(String tipoexpr) {
+        this.tipoexpr = tipoexpr;
     }
 
-    public String getTipo() {
-        return tipo;
+    public String getTipoexpr() {
+        return tipoexpr;
     }
 
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
+    public void setTipoexpr(String tipoexpr) {
+        this.tipoexpr = tipoexpr;
     }
     public abstract Object accept(Visitor v);
 
-    String tipo;
+    public void setType(String type){ this.type = type;}
+    public String getType(){return type;}
+    String tipoexpr;
+    String type;
 }

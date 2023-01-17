@@ -138,7 +138,7 @@ ReadStat ::= IdList:l READ STRING_CONST:c {:RESULT = new ReadStat(l,c);:}
 
 
 IdList ::= ID:id {:RESULT = new ArrayList<IDLeaf>(); RESULT.add(new IDLeaf(id.toString()));:}
-	| ID:id COMMA IdList:l {:RESULT = l; RESULT.add(new IDLeaf(id.toString()));:};
+	| ID:id COMMA IdList:l {:RESULT = l; RESULT.add(0, new IDLeaf(id.toString()));:};
 
 WriteStat ::=  LPAR ExprList:l RPAR WRITE {:RESULT = new WriteStat(l, 0);:}
 	|  LPAR ExprList:l RPAR WRITELN {:RESULT = new WriteStat(l, 1);:};
@@ -177,7 +177,7 @@ Expr ::= INTEGER_CONST:c {:RESULT= new ConstLeaf("integer_const", c.toString());
 	| Expr:e1  NE Expr:e2 {:RESULT = new BinaryOperation(e1, "ne", e2);:}
 	| MINUS Expr:e1 {:RESULT = new UnaryOperation("minus",e1);:} %prec UMINUS
 	| NOT Expr:e1 {:RESULT = new UnaryOperation("not",e1);:}
-	| LPAR Expr:e1 RPAR {:RESULT = e1;:};
+	| LPAR Expr:e1 RPAR {:RESULT = new UnaryOperation("par", e1);:};
 
 
 

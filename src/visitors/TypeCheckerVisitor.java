@@ -9,7 +9,6 @@ import tables.entries.VarEntry;
 import tables.stacktables.SymbolTable;
 import tables.stacktables.TablesContainer;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -54,6 +53,9 @@ public class TypeCheckerVisitor implements Visitor{
             d.accept(this);
         }
 
+
+        CTranslatorVisitor cvisitor = new CTranslatorVisitor("testC.c");
+        cvisitor.visit(nodo);
         return null;
     }
 
@@ -72,13 +74,12 @@ public class TypeCheckerVisitor implements Visitor{
     public Object visit(IdInit nodo) {
         Expr expr = nodo.getExpr();
         if(expr!=null) {
-            String simbolo = (String) nodo.getId().accept(this);
-            VarEntry riga = (VarEntry) lookup(simbolo);
+            String tipo_simbolo = (String) nodo.getId().accept(this);
             String tipo_expr = (String) expr.accept(this);
-            if(riga.getEntryType().equals("float") && tipo_expr.equals("int"))
+            if(tipo_simbolo.equals("float") && tipo_expr.equals("int"))
                 tipo_expr="float";
-            if(!tipo_expr.equals(riga.getEntryType()))
-                throw new Error("Tipo "+tipo_expr+" e "+riga.getEntryType()+" non matchano");
+            if(!tipo_expr.equals(tipo_simbolo))
+                throw new Error("Type mismatch. Initializing "+nodo.getId().getId()+" with "+tipo_expr+" while expected "+tipo_simbolo);
 
         }
 
@@ -88,12 +89,17 @@ public class TypeCheckerVisitor implements Visitor{
     //EXPR
     @Override
     public Object visit(IDLeaf nodo) {
+        if(lookup(nodo.getId()).getEntrySpec().equals("fun")){
+            throw new Error("Expected a variable but got a function: "+nodo.getId());
+        }
         VarEntry entry = (VarEntry) lookup(nodo.getId());
+        nodo.setType(entry.getEntryType());
         return entry.getEntryType();
     }
 
     @Override
     public Object visit(ConstLeaf nodo) {
+        nodo.setType(OperationRules.getConstType(nodo.getConstType()));
         return OperationRules.getConstType(nodo.getConstType());
     }
 
@@ -104,6 +110,7 @@ public class TypeCheckerVisitor implements Visitor{
         if(OperationRules.getOpType(nodo.getOpType(), tipo1, tipo2) == null){
             throw new Error ("Cannot run operation "+nodo.getOpType()+ " with types: "+tipo1+" and "+tipo2);
         }
+        nodo.setType(OperationRules.getOpType(nodo.getOpType(), tipo1, tipo2));
         return OperationRules.getOpType(nodo.getOpType(), tipo1, tipo2);
     }
 
@@ -113,6 +120,7 @@ public class TypeCheckerVisitor implements Visitor{
         if(OperationRules.getOpType(nodo.getOpType(), tipo_expr) == null){
             throw new Error ("Cannot run operation "+nodo.getOpType()+ " with type: "+tipo_expr);
         }
+        nodo.setType(OperationRules.getOpType(nodo.getOpType(), tipo_expr));
         return OperationRules.getOpType(nodo.getOpType(), tipo_expr);
     }
 
@@ -138,14 +146,15 @@ public class TypeCheckerVisitor implements Visitor{
             tipo_param = param.getType();
             expr = actual_params.get(i);
             tipo_expr = (String) expr.accept(this);
-            if(param.isOut() && !expr.getTipo().equals("IDLeaf"))
+            if(param.isOut() && !expr.getTipoexpr().equals("IDLeaf"))
                 throw new Error(nome_fun+": parameter "+param.getName()+" must be a variable, cannot be const");
             if(!tipo_expr.equals(tipo_param))
-                throw new Error(nome_fun+": parameter "+param.getName()+"-"+tipo_param+" cannot be used with "+tipo_expr);
-
+                //Posso passare un iintero a un float
+                if(! (tipo_expr.equals("int") && tipo_param.equals("float")))
+                    throw new Error(nome_fun+": parameter "+param.getName()+"-"+tipo_param+" cannot be used with "+tipo_expr);
             i++;
         }
-
+        nodo.setType(fun.getEntryType());
         return fun.getEntryType();
     }
     //FINE EXPR
@@ -206,6 +215,8 @@ public class TypeCheckerVisitor implements Visitor{
             if(!t.getEntrySpec().equals("variable"))
                 throw new Error(t.getEntryName()+" is not a variable");
             tipo_expr= (String) exprList.get(i).accept(this);
+            if(t.getEntryType().equals("float") && tipo_expr.equals("int"))
+                tipo_expr="float";
             if(!tipo_expr.equals(t.getEntryType()))
                 throw new Error("Type mismatch in assignment. Cannot assign to "+t.getEntryName()+"-"+t.getEntryType()+" an expression of type "+tipo_expr);
             i++;
@@ -265,11 +276,12 @@ public class TypeCheckerVisitor implements Visitor{
             tipo_param = param.getType();
             expr = actual_params.get(i);
             tipo_expr = (String) expr.accept(this);
-            if(param.isOut() && !expr.getTipo().equals("IDLeaf"))
+            if(param.isOut() && !expr.getTipoexpr().equals("IDLeaf"))
                 throw new Error(nome_fun+": parameter "+param.getName()+" must be a variable, cannot be const");
             if(!tipo_expr.equals(tipo_param))
-                throw new Error(nome_fun+": parameter "+param.getName()+"-"+tipo_param+" cannot be used with "+tipo_expr);
-
+                //Posso passare un iintero a un float
+                if(! (tipo_expr.equals("int") && tipo_param.equals("float")))
+                    throw new Error(nome_fun+": parameter "+param.getName()+"-"+tipo_param+" cannot be used with "+tipo_expr);
             i++;
         }
 
@@ -284,6 +296,8 @@ public class TypeCheckerVisitor implements Visitor{
 
     @Override
     public Object visit(ParDecl nodo) {
+        //Non dovrebbe esserci niente da fare, c'è tutto nella prima passata
+
         return null;
     }
 
@@ -291,6 +305,9 @@ public class TypeCheckerVisitor implements Visitor{
 
     @Override
     public Object visit(ReadStat nodo) {
+        //Controllo solo se questi id sono stati dichiarati
+        for(IDLeaf id: nodo.getIdList())
+            id.accept(this);
         return null;
     }
 
@@ -307,6 +324,11 @@ public class TypeCheckerVisitor implements Visitor{
 
     @Override
     public Object visit(WriteStat nodo) {
+        //Controllo solo se queste expr sono corrette, e assegno anche i tipi
+        ArrayList<Expr> exprList = nodo.getExprList();
+        for(Expr e:exprList)
+            e.accept(this);
         return null;
     }
+
 }

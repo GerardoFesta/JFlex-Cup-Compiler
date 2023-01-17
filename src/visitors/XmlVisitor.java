@@ -36,7 +36,7 @@ public class XmlVisitor implements Visitor{
 
 
     public Object visit(IDLeaf idLeaf) {
-        Element idLeafel = document.createElement(idLeaf.getTipo());
+        Element idLeafel = document.createElement(idLeaf.getTipoexpr());
         Text e1 = document.createTextNode(idLeaf.getId());
         idLeafel.appendChild(e1);
         return idLeafel;
@@ -127,7 +127,7 @@ public class XmlVisitor implements Visitor{
 
     @Override
     public Object visit(UnaryOperation unaryOp) {
-        Element unaryOpEl = document.createElement(unaryOp.getTipo());
+        Element unaryOpEl = document.createElement(unaryOp.getTipoexpr());
         unaryOpEl.appendChild(document.createElement(unaryOp.getOpType()));
         Expr expr = unaryOp.getValue();
         unaryOpEl.appendChild((Element)expr.accept(this));
@@ -222,7 +222,7 @@ public class XmlVisitor implements Visitor{
 
     @Override
     public Object visit(ConstLeaf constLeaf) {
-        Element constLeafEl = document.createElement(constLeaf.getTipo());
+        Element constLeafEl = document.createElement(constLeaf.getTipoexpr());
         String valore = constLeaf.getValue();
         Text e1 = document.createTextNode(valore);
 
@@ -248,7 +248,7 @@ public class XmlVisitor implements Visitor{
     public Object visit(FunCall funCall) {
         //nella grammatica funcall ci va IDLeaf anche nella classe funcall
         //nella classe di funcall statemant
-        Element element = document.createElement(funCall.getTipo());
+        Element element = document.createElement(funCall.getTipoexpr());
         IDLeaf id = funCall.getId();
         ArrayList<Expr> exprList = funCall.getExprList();
         element.appendChild((Element)id.accept(this));

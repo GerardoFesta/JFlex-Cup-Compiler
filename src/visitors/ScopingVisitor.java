@@ -83,7 +83,8 @@ public class ScopingVisitor implements Visitor{
         SymbolTable tabella_prodotta = exitScope();
         programNode.setSymtable(tabella_prodotta);
 
-        //DA SOSTITUIRE CON SECONDA PASSATA
+        TypeCheckerVisitor secondavisita = new TypeCheckerVisitor();
+        secondavisita.visit(programNode);
         return null;
 
     }
@@ -154,10 +155,11 @@ public class ScopingVisitor implements Visitor{
         for(ParDecl pardecl:pardeclList){
             paramlist = (ArrayList<Param>) pardecl.accept(this);
             for(Param parametro:paramlist){
-                varEntry=new VarEntry("var", parametro.getType(), parametro.getName(), parametro.isOut());
+                varEntry=new VarEntry("variable", parametro.getType(), parametro.getName(), parametro.isOut());
+                addVarId(varEntry);
             }
             //ATTENZIONE A GESTIONE OUT
-            addVarId(varEntry);
+
         }
         Body body = nodo.getBody();
         body.setSymtable(getCurrentSymTable());
@@ -175,6 +177,7 @@ public class ScopingVisitor implements Visitor{
         ArrayList<Param> paramList = new ArrayList<Param>();
         for(IDLeaf id:idlist){
             String nome= (String) id.accept(this);
+            id.setType(tipo);
             parametro = new Param(nome,tipo, nodo.isOut());
             paramList.add(parametro);
         }
@@ -200,7 +203,7 @@ public class ScopingVisitor implements Visitor{
     @Override
     public Object visit(ForStat nodo) {
         String iteratore = (String) nodo.getId().accept(this);
-        VarEntry entry = new VarEntry("var", "int", iteratore, false);
+        VarEntry entry = new VarEntry("variable", "int", iteratore, false);
         enterScope();
         addVarId(entry);
         SymbolTable currentSymTable = getCurrentSymTable();

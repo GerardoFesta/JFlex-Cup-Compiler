@@ -1,7 +1,9 @@
-def somma(float a | float b): float {
+def somma(out float a, b): float {
     moltViaSomma(a+1,2+2+2);
     return a+b;
 }
+
+integer x << 10;
 
 def moltViaSomma(float a | float b): float {
     float risultato << 0;
@@ -36,8 +38,8 @@ def moltViaSomma(float a | float b): float {
     return risultato;
 }
 
-def divisione_intera(float a | float b): integer{
-    integer div << a / b;
+def divisione_intera(float a | float b): float{
+    float div << a / b;
     return div;
 }
 
@@ -50,7 +52,7 @@ def fibonacci(integer n): integer{
     return fibonacci(n-1) + fibonacci(n-2);
 }
 
-start: def mainfun(): void{
+start: def mainfun(integer a, b | out float c, d |string mimmo ): void{
     integer op <<-1;
     op <-- "Inserisci il numero dell'operazione (0-esci, 1-somma, 2-molt, 3-div intera, 4-potenza, 5-fib)";
     while(op != 0) loop{

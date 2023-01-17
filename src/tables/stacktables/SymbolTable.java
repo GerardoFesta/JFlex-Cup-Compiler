@@ -5,7 +5,7 @@ import tables.entries.TabEntry;
 import java.util.HashMap;
 
 public class SymbolTable {
-    HashMap<String, TabEntry> table;
+    public HashMap<String, TabEntry> table;
     public String tempLabel;
 
     public SymbolTable(HashMap<String, TabEntry> table) {
