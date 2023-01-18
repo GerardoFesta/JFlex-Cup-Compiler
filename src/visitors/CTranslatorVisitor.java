@@ -612,8 +612,11 @@ public class CTranslatorVisitor implements Visitor{
         for(Expr e:exprlist){
             if(e.getType().equals("ConstLeaf")) {
                 ConstLeaf cl = (ConstLeaf) e;
-                if(cl.getConstType().equals("string_const"));
-                    ((ConstLeaf) e).setValue("\""+((ConstLeaf) e).getValue()+"\"");
+                if(cl.getConstType().equals("string_const")) {
+                    writer.print("\"");
+                    printExpr(e);
+                    writer.print("\"");
+                }
             }
             if(!e.getType().equals("bool"))
                 printExpr(e);
