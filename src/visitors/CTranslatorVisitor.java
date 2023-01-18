@@ -610,7 +610,7 @@ public class CTranslatorVisitor implements Visitor{
         int i = 0;
         writer.print("\nprintf(\""+tipo_print+"\", ");
         for(Expr e:exprlist){
-            if(e.getType().equals("ConstLeaf")) {
+            if(e.getTipoexpr().equals("ConstLeaf")) {
                 ConstLeaf cl = (ConstLeaf) e;
                 if(cl.getConstType().equals("string_const")) {
                     writer.print("\"");
