@@ -617,14 +617,13 @@ public class CTranslatorVisitor implements Visitor{
                     printExpr(e);
                     writer.print("\"");
                 }
-            }
-            if(!e.getType().equals("bool"))
-                printExpr(e);
-            else {
-                writer.print("castBoolToString(");
-                printExpr(e);
-                writer.print(")");
-            }
+            }else if(!e.getType().equals("bool"))
+                    printExpr(e);
+                else {
+                    writer.print("castBoolToString(");
+                    printExpr(e);
+                    writer.print(")");
+                }
             i++;
             if(exprlist.size()-i>1)
                 writer.write(", ");
