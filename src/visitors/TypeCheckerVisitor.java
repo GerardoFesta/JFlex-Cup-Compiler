@@ -124,7 +124,7 @@ public class TypeCheckerVisitor implements Visitor{
     @Override
     public Object visit(UnaryOperation nodo) {
         String tipo_expr = (String) nodo.getValue().accept(this);
-        if(!tipo_expr.equals("par")) {
+        if(!nodo.getOpType().equals("par")) {
             if (OperationRules.getOpType(nodo.getOpType(), tipo_expr) == null) {
                 throw new Error("Cannot run operation " + nodo.getOpType() + " with type: " + tipo_expr);
             }
