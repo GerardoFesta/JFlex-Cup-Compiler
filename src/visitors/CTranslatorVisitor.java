@@ -99,19 +99,19 @@ public class CTranslatorVisitor implements Visitor{
                 "   return ritorno; " +
                 "}\n");
 
-        writer.println("int castStringTofloat(char* num) {" +
+        writer.println("float castStringTofloat(char* num) {" +
                 " float ritorno;"+
                 " sscanf (num,\"%f\",&ritorno);" +
                 "   return ritorno; " +
                 "}\n");
 
-        writer.println("int castStringTochar(char* num) {" +
+        writer.println("char castStringTochar(char* num) {" +
                 " char ritorno;"+
                 " sscanf (num,\"%c\",&ritorno);" +
                 "   return ritorno; " +
                 "}\n");
 
-        writer.println("int castStringTobool(char* num) {" +
+        writer.println("bool castStringTobool(char* num) {" +
                 " bool ritorno;"+
                 " sscanf (num,\"%d\",&ritorno);" +
                 "   return ritorno; " +
@@ -146,6 +146,7 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(Program nodo) {
+        System.out.println("Entrato in"+ nodo.getClass());
         nodo.getSymtable().table.forEach((key, entry) -> {
             System.out.println("PRINTING");
             if(entry.getEntrySpec().equals("fun"))
@@ -160,14 +161,17 @@ public class CTranslatorVisitor implements Visitor{
         loadScope(nodo.getSymtable());
 
         ArrayList<Declaration> decls1 = nodo.getDeclList1();
-        ArrayList<Declaration> decl_support = (ArrayList<Declaration>) decls1.clone();
-        boolean result;
-        int completati = 0;
-        while(!(decl_support.size() ==completati)){
-            for (Declaration d: decl_support) {
-                result = (boolean) d.accept(this);
-                if(result)
-                    completati++;
+        ArrayList<Declaration>decl_support = new ArrayList<Declaration>();
+        boolean result = false;
+
+        while(!(decl_support.size() == decls1.size())){
+            for (Declaration d: decls1) {
+                if(!decl_support.contains(d)){
+                    result = (boolean) d.accept(this);
+                    if(result)
+                        decl_support.add(d);
+
+                }
             }
 
         }
@@ -180,15 +184,19 @@ public class CTranslatorVisitor implements Visitor{
         String out="";
         int i = 0;
         for(Param p: mainEntry.getParameters()){
-            tipo_param = getTypeInC(p.getType());
-            writer.println("\t"+tipo_param+" t"+i+" = castStringTo"+tipo_param+"(argv["+i+"]);");
+            if(!p.getType().equals("string")) {
+                tipo_param = getTypeInC(p.getType());
+                writer.println("\t" + tipo_param + " t" + i + " = castStringTo" + tipo_param + "(argv[" + i + "]);");
+            }else{
+                writer.println("\tchar *t" + i + " = argv[" + i + "];");
+            }
             i=i+1;
         }
         writer.print("\n\t"+mainEntry.getEntryName()+"(");
         i = 0;
         for(Param p: mainEntry.getParameters()){
             if(p.isOut())
-                out="*";
+                out="&";
             else
                 out="";
             writer.print(out+"t"+i);
@@ -198,18 +206,22 @@ public class CTranslatorVisitor implements Visitor{
         }
         writer.print(");");
         writer.println("\n}");
+        mainFun.accept(this);
 
 
         //DECL LIST 2
         ArrayList<Declaration> decls2 = nodo.getDeclList2();
-        decl_support = (ArrayList<Declaration>) decls2.clone();
+        decl_support = new ArrayList<Declaration>();
         result = false;
-        completati = 0;
-        while(!(decl_support.size() ==completati)){
-            for (Declaration d: decl_support) {
-                result = (boolean) d.accept(this);
-                if(result)
-                    completati++;
+
+        while(!(decl_support.size() == decls2.size())){
+            for (Declaration d: decls2) {
+                if(!decl_support.contains(d)){
+                    result = (boolean) d.accept(this);
+                    if(result)
+                        decl_support.add(d);
+
+                }
             }
 
         }
@@ -221,6 +233,7 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(FunDecl nodo) {
+        System.out.println("Entrato in"+ nodo.getClass());
         MethodEntry m = (MethodEntry) lookup(nodo.getId().getId());
         writer.print("\n"+getTypeInC(m.getEntryType())+" "+m.getEntryName()+"(");
         String out="";
@@ -244,6 +257,7 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(VarDecl nodo) {
+        System.out.println("Entrato in"+ nodo.getClass());
         boolean terminata = true;
         boolean id_init_finito;
         for(IdInit idInit: nodo.getIdInitList()){
@@ -256,13 +270,14 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(IdInit nodo) {
+        System.out.println("Entrato in"+ nodo.getClass());
         VarEntry entry = (VarEntry) lookup(nodo.getId().getId());
         String prefisso_tipo="";
         if(entry.isAssigned())
             return true;
         if(nodo.getExpr() == null){
             if(!entry.isDeclared())
-                writer.println(getTypeInC(entry.getEntryType())+" "+entry.getEntryName());
+                writer.println(getTypeInC(entry.getEntryType())+" "+entry.getEntryName()+";");
                 entry.setDeclared(true);
                 updateSymbolTable(entry);
             return true;
@@ -271,7 +286,7 @@ public class CTranslatorVisitor implements Visitor{
             if((boolean) expr.accept(this)){
                 if(!entry.isDeclared())
                     prefisso_tipo=getTypeInC(entry.getEntryType());
-                writer.println(prefisso_tipo+" "+entry.getEntryName()+" = ");
+                writer.print("\n"+prefisso_tipo+" "+entry.getEntryName()+" = ");
                 printExpr(expr);
                 writer.print(";");
                 entry.setDeclared(true);
@@ -284,9 +299,15 @@ public class CTranslatorVisitor implements Visitor{
     }
 
     private void printExpr(Expr e){
+        System.out.println("Entrato in PrintExpr");
+
         if(e instanceof IDLeaf) {
             IDLeaf id = (IDLeaf) e;
-            writer.print(" "+id.getId());
+            VarEntry entry = (VarEntry) lookup(id.getId());
+            String out="";
+            if(entry.isOut())
+                out="*";
+            writer.print(" "+out+id.getId());
         } else if (e instanceof ConstLeaf) {
             ConstLeaf constleaf = (ConstLeaf) e;
             writer.print(constleaf.getValue());
@@ -367,25 +388,31 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(BinaryOperation nodo) {
+        System.out.println("Entrato in"+ nodo.getClass());
         boolean b = (boolean) (nodo.getValue1().accept(this)) && (boolean)(nodo.getValue2().accept(this));
         return b;
     }
 
     @Override
     public Object visit(Body nodo) {
+        System.out.println("Entrato in"+ nodo.getClass());
+
         loadScope(nodo.getSymtable());
         nodo.getVarDeclList();
 
         writer.print("{\n");
-        ArrayList<VarDecl> decls = nodo.getVarDeclList();
-        ArrayList<VarDecl> decl_support = (ArrayList<VarDecl>) decls.clone();
-        boolean result;
-        int completati = 0;
-        while(!(decl_support.size() ==completati)){
-            for (Declaration d: decl_support) {
-                result = (boolean) d.accept(this);
-                if(result)
-                    completati++;
+        ArrayList<VarDecl> vardecls = nodo.getVarDeclList();
+        ArrayList<VarDecl> decl_support = new ArrayList<VarDecl>();
+        boolean result = false;
+
+        while(!(decl_support.size() == vardecls.size())){
+            for (VarDecl d: vardecls) {
+                if(!decl_support.contains(d)){
+                    result = (boolean) d.accept(this);
+                    if(result)
+                        decl_support.add(d);
+
+                }
             }
 
         }
@@ -399,33 +426,42 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(ConstLeaf nodo) {
+        System.out.println("Entrato in"+ nodo.getClass());
         return true;
     }
 
     @Override
     public Object visit(FunCall nodo) {
+        System.out.println("Entrato in"+ nodo.getClass());
+
         return true;
     }
     @Override
     public Object visit(IDLeaf nodo) {
+        System.out.println("Entrato in"+ nodo.getClass());
         VarEntry entry = (VarEntry) lookup(nodo.getId());
         return entry.isDeclared();
     }
 
     @Override
     public Object visit(Type nodo) {
+
+        System.out.println("Entrato in"+ nodo.getClass());
         return getTypeInC(nodo.getTipo());
     }
 
     @Override
     public Object visit(UnaryOperation nodo) {
-        return nodo.accept(this);
+        System.out.println("Entrato in"+ nodo.getClass());
+        return nodo.getValue().accept(this);
     }
 
 
 
     @Override
     public Object visit(AssignStat nodo) {
+        System.out.println("Entrato in"+ nodo.getClass());
+
         ArrayList<IDLeaf> idlist = nodo.getIdList();
         ArrayList<Expr> exprList = nodo.getExprList();
         int i=0;
@@ -437,10 +473,10 @@ public class CTranslatorVisitor implements Visitor{
             id.accept(this);
             writer.println("\n");
             printExpr(id);
-            writer.println(" = ");
+            writer.print(" = ");
             expr.accept(this);
             printExpr(expr);
-            writer.println(";");
+            writer.print(";");
             i++;
         }
         return true;
@@ -448,6 +484,8 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(ForStat nodo) {
+        System.out.println("Entrato in"+ nodo.getClass());
+
         IDLeaf id = nodo.getId();
         writer.print("\nfor(int "+id.getId()+" = "+nodo.getInt_con1()+"; "+id.getId()+" < "+nodo.getInt_con2()+"; "+id.getId()+"++)");
         nodo.getBody().accept(this);
@@ -457,6 +495,8 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(IfStat nodo) {
+        System.out.println("Entrato in"+ nodo.getClass());
+
 
         Expr e = nodo.getExpr();
         writer.print("\nif(");
@@ -474,6 +514,8 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(WhileStat nodo) {
+        System.out.println("Entrato in"+ nodo.getClass());
+
         Expr e = nodo.getExpr();
         e.accept(this);
         writer.print("\nwhile(");
@@ -485,6 +527,8 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(FunCallStatement nodo) {
+        System.out.println("Entrato in"+ nodo.getClass());
+
         writer.write("\n"+nodo.getId().getId()+"(");
         MethodEntry firma = (MethodEntry) lookup(nodo.getId().getId());
         ArrayList<Param> parametri_formali = firma.getParameters();
@@ -497,7 +541,7 @@ public class CTranslatorVisitor implements Visitor{
             if(parametri_formali.size()-i>=1)
                 writer.print(", ");
         }
-        writer.print(")");
+        writer.print(");");
 
         return true;
     }
@@ -505,23 +549,30 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(ReadStat nodo) {
+        System.out.println("Entrato in"+ nodo.getClass());
+
 
         if(nodo.getStr_con()!=null)
-            writer.write("\nprintf(\"%s\", "+nodo.getStr_con());
+            writer.write("\nprintf(\"%s\", \""+nodo.getStr_con()+"\");");
         ArrayList<IDLeaf> ids = nodo.getIdList();
         String tipo_id="";
         String tipo_read="";
+        String out="";
         for(IDLeaf id:ids){
             tipo_id = id.getType();
             if(tipo_id.equals("string")){
-               writer.print("\n"+id.getId()+" = leggiStringa();");
+               writer.print("\n");
+               printExpr(id);
+               writer.print(" = leggiStringa();");
             }else{
                 switch(tipo_id){
                     case "int":tipo_read="%d"; break;
                     case "float":tipo_read="%f"; break;
                     case "boolean":tipo_read="%d"; break;
                 }
-                writer.print("\nscanf("+tipo_read+", "+id.getId()+");");
+                writer.print("\nscanf(\""+tipo_read+"\", &");
+                printExpr(id);
+                writer.print(");");
             }
         }
         return true;
@@ -529,6 +580,8 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(ReturnStatement nodo) {
+        System.out.println("Entrato in"+ nodo.getClass());
+
         writer.print("\nreturn ");
         if(nodo.getExpr()!=null)
             printExpr(nodo.getExpr());
@@ -540,6 +593,8 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(WriteStat nodo) {
+        System.out.println("Entrato in"+ nodo.getClass());
+
         ArrayList<Expr> exprlist = nodo.getExprList();
         String tipo_expr="";
         String tipo_print="";
@@ -553,14 +608,16 @@ public class CTranslatorVisitor implements Visitor{
             }
         }
         int i = 0;
+        writer.print("\nprintf(\""+tipo_print+"\", ");
         for(Expr e:exprlist){
-            writer.print("\nprintf(\""+tipo_print+"\", ");
+
             if(!e.getType().equals("bool"))
                 printExpr(e);
-            else
+            else {
                 writer.print("castBoolToString(");
                 printExpr(e);
                 writer.print(")");
+            }
             i++;
             if(exprlist.size()-i>1)
                 writer.write(", ");
@@ -573,6 +630,8 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(ParDecl nodo) {
+        System.out.println("Entrato in"+ nodo.getClass());
+
         return null;
     }
 }

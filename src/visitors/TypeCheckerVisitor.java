@@ -53,6 +53,13 @@ public class TypeCheckerVisitor implements Visitor{
             d.accept(this);
         }
 
+        nodo.getMainFunDecl().accept(this);
+
+        ArrayList<Declaration> dichiarazioni2 = nodo.getDeclList1();
+        for(Declaration d:dichiarazioni2){
+            d.accept(this);
+        }
+
 
         CTranslatorVisitor cvisitor = new CTranslatorVisitor("testC.c");
         cvisitor.visit(nodo);
@@ -191,6 +198,8 @@ public class TypeCheckerVisitor implements Visitor{
     public Object visit(ReturnStatement nodo) {
         if(nodo.getExpr()!=null) {
             String tipo_ritorno = (String) nodo.getExpr().accept(this);
+            if(current_function.getEntryType().equals("float") && tipo_ritorno.equals("int"))
+                tipo_ritorno="float";
             if (!tipo_ritorno.equals(current_function.getEntryType()))
                 throw new Error("Returned "+tipo_ritorno+" in function "+current_function.getEntryName()+" while expecting "+current_function.getEntryType());
         }else{

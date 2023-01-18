@@ -1,0 +1,9 @@
+def testfun(float a, b): float {
+    integer e << c, c << d ;
+    integer d<<1;
+    return 1.0;
+}
+
+start: def mainfun(): void{
+    testfun(1.0,2.0);
+}

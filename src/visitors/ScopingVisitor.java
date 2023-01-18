@@ -156,6 +156,8 @@ public class ScopingVisitor implements Visitor{
             paramlist = (ArrayList<Param>) pardecl.accept(this);
             for(Param parametro:paramlist){
                 varEntry=new VarEntry("variable", parametro.getType(), parametro.getName(), parametro.isOut());
+                varEntry.setDeclared(true);
+                varEntry.setAssigned(true);
                 addVarId(varEntry);
             }
             //ATTENZIONE A GESTIONE OUT
