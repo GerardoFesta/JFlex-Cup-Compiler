@@ -4,6 +4,10 @@ def testfun(float a, b): float {
     return 1.0;
 }
 
+integer z << x;
+integer x << 10;
+
+
 start: def mainfun(): void{
     testfun(1.0,2.0);
 }

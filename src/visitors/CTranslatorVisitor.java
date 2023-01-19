@@ -15,7 +15,7 @@ import java.util.Stack;
 public class CTranslatorVisitor implements Visitor{
     PrintWriter writer;
     Stack<SymbolTable> stack;
-
+    String tabulation="";
 
     public CTranslatorVisitor(String nome_file){
         try{
@@ -151,19 +151,37 @@ public class CTranslatorVisitor implements Visitor{
             System.out.println("PRINTING");
             if(entry.getEntrySpec().equals("fun"))
                 printFunctionSignature((MethodEntry) entry);
-            else{
-                writer.println("\n"+getTypeInC(entry.getEntryType())+" "+ entry.getEntryName()+";");
-                VarEntry v_entry =(VarEntry)entry;
-                v_entry.setDeclared(true);
-            }
         });
 
         loadScope(nodo.getSymtable());
 
         ArrayList<Declaration> decls1 = nodo.getDeclList1();
+        ArrayList<Declaration> decls2 = nodo.getDeclList2();
         ArrayList<Declaration>decl_support = new ArrayList<Declaration>();
         boolean result = false;
+        ArrayList<VarDecl> globalvardecl = new ArrayList<>();
 
+        //STAMPA VARIABILI GLOBALI
+        decls1.forEach(d -> {
+            if(d instanceof VarDecl)
+                globalvardecl.add((VarDecl) d);
+        });
+        decls2.forEach(d -> {
+            if(d instanceof VarDecl)
+                globalvardecl.add((VarDecl) d);
+
+        });
+
+        globalvardecl.forEach(varDecl -> {
+            if(decls1.contains(varDecl))
+                decls1.remove(varDecl);
+            if(decls2.contains(varDecl))
+                decls2.remove(varDecl);
+        });
+
+        globalvardecl.forEach(d -> d.accept(this));
+
+        //STAMPA FUNZIONI E VARIABILI
         while(!(decl_support.size() == decls1.size())){
             for (Declaration d: decls1) {
                 if(!decl_support.contains(d)){
@@ -210,7 +228,6 @@ public class CTranslatorVisitor implements Visitor{
 
 
         //DECL LIST 2
-        ArrayList<Declaration> decls2 = nodo.getDeclList2();
         decl_support = new ArrayList<Declaration>();
         result = false;
 
@@ -235,7 +252,7 @@ public class CTranslatorVisitor implements Visitor{
     public Object visit(FunDecl nodo) {
         System.out.println("Entrato in"+ nodo.getClass());
         MethodEntry m = (MethodEntry) lookup(nodo.getId().getId());
-        writer.print("\n"+getTypeInC(m.getEntryType())+" "+m.getEntryName()+"(");
+        writer.print("\n\n"+getTypeInC(m.getEntryType())+" "+m.getEntryName()+"(");
         String out="";
         int i=0;
         for(Param p:m.getParameters()){
@@ -277,7 +294,7 @@ public class CTranslatorVisitor implements Visitor{
             return true;
         if(nodo.getExpr() == null){
             if(!entry.isDeclared())
-                writer.println(getTypeInC(entry.getEntryType())+" "+entry.getEntryName()+";");
+                writer.print("\n"+tabulation+getTypeInC(entry.getEntryType())+" "+entry.getEntryName()+";");
                 entry.setDeclared(true);
                 updateSymbolTable(entry);
             return true;
@@ -286,7 +303,7 @@ public class CTranslatorVisitor implements Visitor{
             if((boolean) expr.accept(this)){
                 if(!entry.isDeclared())
                     prefisso_tipo=getTypeInC(entry.getEntryType());
-                writer.print("\n"+prefisso_tipo+" "+entry.getEntryName()+" = ");
+                writer.print("\n"+tabulation+prefisso_tipo+" "+entry.getEntryName()+" = ");
                 printExpr(expr);
                 writer.print(";");
                 entry.setDeclared(true);
@@ -307,7 +324,7 @@ public class CTranslatorVisitor implements Visitor{
             String out="";
             if(entry.isOut())
                 out="*";
-            writer.print(" "+out+id.getId());
+            writer.print(out+id.getId());
         } else if (e instanceof ConstLeaf) {
             ConstLeaf constleaf = (ConstLeaf) e;
             writer.print(constleaf.getValue());
@@ -401,6 +418,7 @@ public class CTranslatorVisitor implements Visitor{
         nodo.getVarDeclList();
 
         writer.print("{\n");
+        tabulation=tabulation+"\t";
         ArrayList<VarDecl> vardecls = nodo.getVarDeclList();
         ArrayList<VarDecl> decl_support = new ArrayList<VarDecl>();
         boolean result = false;
@@ -419,8 +437,10 @@ public class CTranslatorVisitor implements Visitor{
         for(Stat s: nodo.getStatList())
             s.accept(this);
 
-        writer.print("\n}\n");
         exitScope();
+        tabulation = tabulation.substring(0,tabulation.length()-1);
+        writer.print("\n"+tabulation+"}");
+
         return null;
     }
 
@@ -471,7 +491,7 @@ public class CTranslatorVisitor implements Visitor{
             id=idlist.get(i);
             expr=exprList.get(i);
             id.accept(this);
-            writer.println("\n");
+            writer.print("\n"+tabulation);
             printExpr(id);
             writer.print(" = ");
             expr.accept(this);
@@ -487,7 +507,7 @@ public class CTranslatorVisitor implements Visitor{
         System.out.println("Entrato in"+ nodo.getClass());
 
         IDLeaf id = nodo.getId();
-        writer.print("\nfor(int "+id.getId()+" = "+nodo.getInt_con1()+"; "+id.getId()+" < "+nodo.getInt_con2()+"; "+id.getId()+"++)");
+        writer.print("\n"+tabulation+"for(int "+id.getId()+" = "+nodo.getInt_con1()+"; "+id.getId()+" < "+nodo.getInt_con2()+"; "+id.getId()+"++)");
         nodo.getBody().accept(this);
         return true;
     }
@@ -499,7 +519,7 @@ public class CTranslatorVisitor implements Visitor{
 
 
         Expr e = nodo.getExpr();
-        writer.print("\nif(");
+        writer.print("\n"+tabulation+"if(");
         e.accept(this);
         printExpr(e);
         writer.write(")");
@@ -518,7 +538,7 @@ public class CTranslatorVisitor implements Visitor{
 
         Expr e = nodo.getExpr();
         e.accept(this);
-        writer.print("\nwhile(");
+        writer.print("\n"+tabulation+"while(");
         printExpr(e);
         writer.print(")");
         nodo.getBody().accept(this);
@@ -529,7 +549,7 @@ public class CTranslatorVisitor implements Visitor{
     public Object visit(FunCallStatement nodo) {
         System.out.println("Entrato in"+ nodo.getClass());
 
-        writer.write("\n"+nodo.getId().getId()+"(");
+        writer.write("\n"+tabulation+nodo.getId().getId()+"(");
         MethodEntry firma = (MethodEntry) lookup(nodo.getId().getId());
         ArrayList<Param> parametri_formali = firma.getParameters();
         int i=0;
@@ -553,7 +573,7 @@ public class CTranslatorVisitor implements Visitor{
 
 
         if(nodo.getStr_con()!=null)
-            writer.write("\nprintf(\"%s\", \""+nodo.getStr_con()+"\");");
+            writer.write("\n"+tabulation+"printf(\"%s\", \""+nodo.getStr_con()+"\");");
         ArrayList<IDLeaf> ids = nodo.getIdList();
         String tipo_id="";
         String tipo_read="";
@@ -561,7 +581,7 @@ public class CTranslatorVisitor implements Visitor{
         for(IDLeaf id:ids){
             tipo_id = id.getType();
             if(tipo_id.equals("string")){
-               writer.print("\n");
+               writer.print("\n"+tabulation);
                printExpr(id);
                writer.print(" = leggiStringa();");
             }else{
@@ -570,7 +590,7 @@ public class CTranslatorVisitor implements Visitor{
                     case "float":tipo_read="%f"; break;
                     case "boolean":tipo_read="%d"; break;
                 }
-                writer.print("\nscanf(\""+tipo_read+"\", &");
+                writer.print("\n"+tabulation+"scanf(\""+tipo_read+"\", &");
                 printExpr(id);
                 writer.print(");");
             }
@@ -582,7 +602,7 @@ public class CTranslatorVisitor implements Visitor{
     public Object visit(ReturnStatement nodo) {
         System.out.println("Entrato in"+ nodo.getClass());
 
-        writer.print("\nreturn ");
+        writer.print("\n"+tabulation+"return ");
         if(nodo.getExpr()!=null)
             printExpr(nodo.getExpr());
         writer.print(";");
@@ -608,7 +628,7 @@ public class CTranslatorVisitor implements Visitor{
             }
         }
         int i = 0;
-        writer.print("\nprintf(\""+tipo_print+"\", ");
+        writer.print("\n"+tabulation+"printf(\""+tipo_print+"\", ");
         for(Expr e:exprlist){
             if(e.getTipoexpr().equals("ConstLeaf")) {
                 ConstLeaf cl = (ConstLeaf) e;
