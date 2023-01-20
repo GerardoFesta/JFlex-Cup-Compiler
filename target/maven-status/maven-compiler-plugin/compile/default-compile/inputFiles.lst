@@ -20,6 +20,7 @@ C:\Users\Gerardo\IdeaProjects\festa-foudal_es5\src\tables\entries\TabEntry.java
 C:\Users\Gerardo\IdeaProjects\festa-foudal_es5\src\visitors\TypeCheckerVisitor.java
 C:\Users\Gerardo\IdeaProjects\festa-foudal_es5\src\de\jflex\example\Lexer.java
 C:\Users\Gerardo\IdeaProjects\festa-foudal_es5\src\nodes\ConstLeaf.java
+C:\Users\Gerardo\IdeaProjects\festa-foudal_es5\src\visitors\CTranslatorVisitor.java
 C:\Users\Gerardo\IdeaProjects\festa-foudal_es5\src\nodes\FunDecl.java
 C:\Users\Gerardo\IdeaProjects\festa-foudal_es5\src\nodes\UnaryOperation.java
 C:\Users\Gerardo\IdeaProjects\festa-foudal_es5\src\nodes\AssignStat.java

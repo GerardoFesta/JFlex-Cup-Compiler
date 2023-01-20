@@ -1,5 +1,4 @@
-def somma(out float a, b): float {
-    moltViaSomma(a+1,2+2+2);
+def somma(float a, b): float {
     return a+b;
 }
 
@@ -11,13 +10,8 @@ def moltViaSomma(float a | float b): float {
     var dec_cont << 0, mimmo<<1.0;
 
     while b>1 loop{
-        if b < 1 then{
-            dec_cont << dec_cont + 1;
-
-        }else{
             risultato << risultato + somma(a, a);
             b << b - 1;
-        }
 
     }
 
@@ -52,7 +46,7 @@ def fibonacci(integer n): integer{
     return fibonacci(n-1) + fibonacci(n-2);
 }
 
-start: def mainfun(integer a, b | out float c, d |string mimmo ): void{
+start: def mainfun(): void{
     integer op <<-1;
     op <-- "Inserisci il numero dell'operazione (0-esci, 1-somma, 2-molt, 3-div intera, 4-potenza, 5-fib)";
     while(op != 0) loop{

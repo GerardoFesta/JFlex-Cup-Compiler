@@ -1,0 +1,19 @@
+def checkbool(boolean b1, b2|out boolean risultato):boolean{
+    if(b1 = b2) then{
+        risultato << true;
+        return true;
+    }else{
+        risultato << false;
+        return false;
+    }
+}
+
+start: def principale(boolean test):string{
+    boolean b1,b2,b3;
+    b1,b2 <-- "Inserisci due booleani, scrivendo true/false o 1/0";
+    if(checkbool(b1,b2,b3) = test) then{
+        ("L'espressione ", b1, " = ", b2, " ha risultato ", b3," che è uguale a quello dato in input, ovvero ", test)-->;
+    }else{
+        ("L'espressione ",b1," = ",b2," ha risultato ", b3," che NON è uguale a quello dato in input, ovvero ",test)-->;
+    }
+}

@@ -291,12 +291,12 @@ public class TypeCheckerVisitor implements Visitor{
             tipo_param = param.getType();
             expr = actual_params.get(i);
             tipo_expr = (String) expr.accept(this);
+            if(tipo_expr.equals("int") && tipo_param.equals("float"))
+                tipo_expr="float";
             if(param.isOut() && !expr.getTipoexpr().equals("IDLeaf"))
                 throw new Error(nome_fun+": parameter "+param.getName()+" must be a variable, cannot be const");
             if(!tipo_expr.equals(tipo_param))
-                //Posso passare un iintero a un float
-                if(! (tipo_expr.equals("int") && tipo_param.equals("float")))
-                    throw new Error(nome_fun+": parameter "+param.getName()+"-"+tipo_param+" cannot be used with "+tipo_expr);
+                throw new Error(nome_fun+": parameter "+param.getName()+"-"+tipo_param+" cannot be used with "+tipo_expr);
             i++;
         }
 

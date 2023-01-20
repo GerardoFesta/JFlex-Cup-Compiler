@@ -20,7 +20,9 @@ nodes\FunCallStatement.class
 nodes\FunCall.class
 nodes\ConstLeaf.class
 nodes\IDLeaf.class
+Tester.class
 nodes\WriteStat.class
+visitors\CTranslatorVisitor.class
 nodes\ParDecl.class
 nodes\ReturnStatement.class
 nodes\Stat.class

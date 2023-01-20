@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Test3bool" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="Tester" />
+    <module name="festa-foudal_es5" />
+    <option name="PROGRAM_PARAMETERS" value="&quot;./testfiles/test3bool.txt&quot;" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

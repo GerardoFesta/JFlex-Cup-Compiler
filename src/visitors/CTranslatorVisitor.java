@@ -111,18 +111,35 @@ public class CTranslatorVisitor implements Visitor{
                 "   return ritorno; " +
                 "}\n");
 
-        writer.println("bool castStringTobool(char* num) {" +
-                " bool ritorno;"+
-                " sscanf (num,\"%d\",&ritorno);" +
-                "   return ritorno; " +
-                "}\n");
+        writer.println("bool castStringTobool(bool* b, char*str) {" +
+                " if(strcmp(str,\"1\")==0 || strcmp(str,\"true\")==0){"+
+                "   *b = true;"+
+                "   return 1;"+
+                "}"+
+                "if(strcmp(str,\"0\")==0 || strcmp(str,\"false\")==0){"+
+                "   *b = false;"+
+                "   return 0;"+
+                "}"+
+                "return -1;"+
+                "}");
 
         writer.println("char* castStringTostring(char* num) {" +
                 " return num; " +
                 "}\n");
 
         writer.println("char * leggiStringa() { char *buffer = malloc(sizeof(char) * 1000); scanf(\"%s\" ,buffer);   return buffer; }");
-
+        writer.println("bool leggibool(bool* b){"+
+            "char* str = leggiStringa();"+
+            "if(strcmp(str,\"1\")==0 || strcmp(str,\"true\")==0){"+
+             "   *b = true;"+
+             "   return 1;"+
+            "}"+
+            "if(strcmp(str,\"0\")==0 || strcmp(str,\"false\")==0){"+
+                "*b = false;"+
+                "return 0;"+
+            "}"+
+            "return -1;"+
+        "}");
     }
 
 
@@ -200,9 +217,17 @@ public class CTranslatorVisitor implements Visitor{
         writer.println("\n\nint main(int argc, char* argv[]){");
         String tipo_param;
         String out="";
-        int i = 0;
+        int i = 1;
         for(Param p: mainEntry.getParameters()){
-            if(!p.getType().equals("string")) {
+            if(p.getType().equals("bool")){
+                tipo_param = getTypeInC(p.getType());
+                writer.print("\n\tbool"+" t"+ i+";");
+                writer.println("\n\t" + "int" + " ts" + i + " = castStringTobool(&t"+i+", argv[" + i + "]);");
+                writer.println("\t"+"if(ts"+i+"==-1){");
+                writer.println("\t\t printf(\"%s\",\"Errore, il parametro booleano dato in input non è ben formattato\");");
+                writer.println("\t\t return 1;");
+                writer.println("\t}");
+            }else if(!p.getType().equals("string")) {
                 tipo_param = getTypeInC(p.getType());
                 writer.println("\t" + tipo_param + " t" + i + " = castStringTo" + tipo_param + "(argv[" + i + "]);");
             }else{
@@ -211,7 +236,7 @@ public class CTranslatorVisitor implements Visitor{
             i=i+1;
         }
         writer.print("\n\t"+mainEntry.getEntryName()+"(");
-        i = 0;
+        i = 1;
         for(Param p: mainEntry.getParameters()){
             if(p.isOut())
                 out="&";
@@ -584,11 +609,18 @@ public class CTranslatorVisitor implements Visitor{
                writer.print("\n"+tabulation);
                printExpr(id);
                writer.print(" = leggiStringa();");
+            }else if(tipo_id.equals("bool")) {
+                writer.print("\n"+tabulation+"if(leggibool(&");
+                printExpr(id);
+                writer.print(")==-1){");
+                writer.print("\n"+tabulation+"\tprintf(\"%s\",\"Errore lettura booleano (inserisci true/1, false/0)\");");
+                writer.print("\n"+tabulation+"\treturn 1;");
+                writer.print("\n"+tabulation+"}");
             }else{
+
                 switch(tipo_id){
                     case "int":tipo_read="%d"; break;
                     case "float":tipo_read="%f"; break;
-                    case "boolean":tipo_read="%d"; break;
                 }
                 writer.print("\n"+tabulation+"scanf(\""+tipo_read+"\", &");
                 printExpr(id);
@@ -613,7 +645,7 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(WriteStat nodo) {
-        System.out.println("Entrato in"+ nodo.getClass());
+        System.out.println("Entrato in "+ nodo.getClass());
 
         ArrayList<Expr> exprlist = nodo.getExprList();
         String tipo_expr="";
@@ -624,7 +656,7 @@ public class CTranslatorVisitor implements Visitor{
                 case "int":tipo_print=tipo_print+"%d"; break;
                 case "float":tipo_print=tipo_print+"%f"; break;
                 case "string":tipo_print=tipo_print+"%s"; break;
-                case "boolean":tipo_print=tipo_print+"%s"; break;
+                case "bool":tipo_print=tipo_print+"%s"; break;
             }
         }
         int i = 0;
@@ -645,7 +677,7 @@ public class CTranslatorVisitor implements Visitor{
                     writer.print(")");
                 }
             i++;
-            if(exprlist.size()-i>1)
+            if(exprlist.size()-i>=1)
                 writer.write(", ");
         }
         writer.print(");");

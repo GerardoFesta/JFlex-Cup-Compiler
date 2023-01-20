@@ -30,8 +30,6 @@ public class OperationRules {
         inferenceTable.put("str_concat-string-string", "string");
         inferenceTable.put("and-bool-bool", "bool");
         inferenceTable.put("or-bool-bool", "bool");
-        inferenceTable.put("lt-bool-bool", "bool");
-        inferenceTable.put("and-bool-bool", "bool");
         inferenceTable.put("gt-int-int", "bool");
         inferenceTable.put("gt-int-float", "bool");
         inferenceTable.put("gt-float-int", "bool");
@@ -52,10 +50,12 @@ public class OperationRules {
         inferenceTable.put("eq-int-float", "bool");
         inferenceTable.put("eq-float-int", "bool");
         inferenceTable.put("eq-float-float", "bool");
+        inferenceTable.put("eq-bool-bool", "bool");
         inferenceTable.put("ne-int-int", "bool");
         inferenceTable.put("ne-int-float", "bool");
         inferenceTable.put("ne-float-int", "bool");
         inferenceTable.put("ne-float-float", "bool");
+        inferenceTable.put("ne-bool-bool", "bool");
         inferenceTable.put("minus-int", "int");
         inferenceTable.put("minus-float", "float");
         inferenceTable.put("not-bool", "bool");
