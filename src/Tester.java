@@ -15,12 +15,14 @@ public class Tester {
         FileInputStream str = new FileInputStream(args[0]);
         Reader reader = new InputStreamReader(str);
         parser p = new parser(new Lexer(reader));
-
-
-        ScopingVisitor scopingVisitor = new ScopingVisitor();
+        String nomefile= args[0].split("/")[args[0].split("/").length-1];
+        String savePath ="./test_files/c_out/"+nomefile.split("\\.")[0]+".c";
+        ScopingVisitor scopingVisitor = new ScopingVisitor(savePath);
         Program program = (Program) p.parse().value;
 
         program.accept(scopingVisitor);
+        //Lo scoping visitor, al termine della visita, richiamerà
+        //il typecheckerVisitor che a sua volta richiamerà il CTranslator
 
     }
 }

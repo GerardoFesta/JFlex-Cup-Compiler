@@ -17,11 +17,13 @@ public class ScopingVisitor implements Visitor{
     private int tableCounter = 0;
     Stack<SymbolTable> stack;
     TablesContainer tablesContainer;
+    String savepath;
 
 
-    public ScopingVisitor() {
+    public ScopingVisitor(String savepath) {
         this.stack = new Stack<SymbolTable>();
         tablesContainer = new TablesContainer();
+        this.savepath=savepath;
     }
 
     public SymbolTable enterScope(){
@@ -83,7 +85,7 @@ public class ScopingVisitor implements Visitor{
         SymbolTable tabella_prodotta = exitScope();
         programNode.setSymtable(tabella_prodotta);
 
-        TypeCheckerVisitor secondavisita = new TypeCheckerVisitor();
+        TypeCheckerVisitor secondavisita = new TypeCheckerVisitor(savepath);
         secondavisita.visit(programNode);
         return null;
 

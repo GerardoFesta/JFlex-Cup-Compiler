@@ -73,21 +73,21 @@ public class CTranslatorVisitor implements Visitor{
                 "   strcat(buffer , str2);" +
                 "   return buffer; " +
                 "}\n");
-        writer.println("char * castIntToString(int num) {" +
+        writer.println("char * castintToString(int num) {" +
                 "   char *buffer = malloc(sizeof(char) * 9999999);" +
                 "   *buffer = '\\0';" +
                 "   sprintf(buffer , \"%d\" ,num);" +
                 "   return buffer; " +
                 "}\n");
 
-        writer.println("char * castFloatToString(float num) {" +
+        writer.println("char * castfloatToString(float num) {" +
                 "   char *buffer = malloc(sizeof(char) * 1000000);" +
                 "   *buffer = '\\0';" +
                 "   sprintf(buffer , \"%f\" ,num);" +
                 "   return buffer; " +
                 "}\n");
 
-        writer.println("char * castBoolToString(int num) {" +
+        writer.println("char * castboolToString(int num) {" +
                 "   char *buffer = \"true\";" +
                 "   if(num == 0) { buffer = \"false\"; }" +
                 "   return buffer; " +
@@ -123,7 +123,7 @@ public class CTranslatorVisitor implements Visitor{
                 "return -1;"+
                 "}");
 
-        writer.println("char* castStringTostring(char* num) {" +
+        writer.println("char* caststringTostring(char* num) {" +
                 " return num; " +
                 "}\n");
 
@@ -352,7 +352,10 @@ public class CTranslatorVisitor implements Visitor{
             writer.print(out+id.getId());
         } else if (e instanceof ConstLeaf) {
             ConstLeaf constleaf = (ConstLeaf) e;
-            writer.print(constleaf.getValue());
+            if(constleaf.getConstType().equals("string_const"))
+                writer.print("\""+constleaf.getValue()+"\"");
+            else
+                writer.print(constleaf.getValue());
         } else if (e instanceof UnaryOperation) {
             UnaryOperation unaryOperation = (UnaryOperation) e;
             String op="";
@@ -392,18 +395,36 @@ public class CTranslatorVisitor implements Visitor{
                 case "ne": op_tradotta="!="; break;
             }
             if(op_tradotta.equals("str_concat")){
-                writer.print("str_concat(");
+                String tipo_expr1 = binaryOperation.getValue1().getType();
+                String extraPar="";
+                if(!tipo_expr1.equals("string")){
+                    writer.print("str_concat("+"cast"+tipo_expr1+"ToString(");
+                    extraPar=")";
+                }else
+                    writer.print("str_concat(");
                 printExpr(binaryOperation.getValue1());
-                writer.print(", ");
+                writer.print(extraPar+", ");
+                extraPar="";
+                String tipo_expr2 = binaryOperation.getValue2().getType();
+                if(!tipo_expr2.equals("string")) {
+                    writer.print("cast" + tipo_expr2 + "ToString(");
+                    extraPar = ")";
+                }
                 printExpr(binaryOperation.getValue2());
-                writer.print(")");
+                writer.print(extraPar+")");
             }else if(op_tradotta.equals("pow")){
                 writer.print("pow(");
                 printExpr(binaryOperation.getValue1());
                 writer.print(", ");
                 printExpr(binaryOperation.getValue2());
                 writer.print(")");
-            }else{
+            }else if(op_tradotta.equals("==") && binaryOperation.getValue1().getType().equals("string")){
+                writer.print("strcmp(");
+                printExpr(binaryOperation.getValue1());
+                writer.print(", ");
+                printExpr(binaryOperation.getValue2());
+                writer.print(")==0");
+            } else{
                 printExpr(binaryOperation.getValue1());
                 writer.print(op_tradotta);
                 printExpr(binaryOperation.getValue2());
@@ -415,13 +436,15 @@ public class CTranslatorVisitor implements Visitor{
             MethodEntry firma = (MethodEntry) lookup(funcall.getId().getId());
             ArrayList<Param> parametri_formali = firma.getParameters();
             int i=0;
-            for(Expr expr: funcall.getExprList()){
-                if(parametri_formali.get(i).isOut())
-                    writer.print("&");
-                printExpr(expr);
-                i++;
-                if(parametri_formali.size()-i>=1)
-                    writer.print(", ");
+            if(funcall.getExprList()!=null) { //serve perché se è null non ci sono params
+                for (Expr expr : funcall.getExprList()) {
+                    if (parametri_formali.get(i).isOut())
+                        writer.print("&");
+                    printExpr(expr);
+                    i++;
+                    if (parametri_formali.size() - i >= 1)
+                        writer.print(", ");
+                }
             }
             writer.print(")");
         }
@@ -532,7 +555,12 @@ public class CTranslatorVisitor implements Visitor{
         System.out.println("Entrato in"+ nodo.getClass());
 
         IDLeaf id = nodo.getId();
-        writer.print("\n"+tabulation+"for(int "+id.getId()+" = "+nodo.getInt_con1()+"; "+id.getId()+" < "+nodo.getInt_con2()+"; "+id.getId()+"++)");
+        int val1 = Integer.parseInt(nodo.getInt_con1());
+        int val2 = Integer.parseInt(nodo.getInt_con2());
+        if(val1<=val2)
+            writer.print("\n"+tabulation+"for(int "+id.getId()+" = "+nodo.getInt_con1()+"; "+id.getId()+" <= "+nodo.getInt_con2()+"; "+id.getId()+"++)");
+        else
+            writer.print("\n"+tabulation+"for(int "+id.getId()+" = "+nodo.getInt_con1()+"; "+id.getId()+" >= "+nodo.getInt_con2()+"; "+id.getId()+"--)");
         nodo.getBody().accept(this);
         return true;
     }
@@ -578,13 +606,15 @@ public class CTranslatorVisitor implements Visitor{
         MethodEntry firma = (MethodEntry) lookup(nodo.getId().getId());
         ArrayList<Param> parametri_formali = firma.getParameters();
         int i=0;
-        for(Expr expr: nodo.getExprList()){
-            if(parametri_formali.get(i).isOut())
-                writer.print("&");
-            printExpr(expr);
-            i++;
-            if(parametri_formali.size()-i>=1)
-                writer.print(", ");
+        if(nodo.getExprList()!=null) {
+            for (Expr expr : nodo.getExprList()) {
+                if (parametri_formali.get(i).isOut())
+                    writer.print("&");
+                printExpr(expr);
+                i++;
+                if (parametri_formali.size() - i >= 1)
+                    writer.print(", ");
+            }
         }
         writer.print(");");
 
@@ -659,20 +689,16 @@ public class CTranslatorVisitor implements Visitor{
                 case "bool":tipo_print=tipo_print+"%s"; break;
             }
         }
+        if(nodo.getMode()==1)
+            tipo_print+="\\n";
         int i = 0;
         writer.print("\n"+tabulation+"printf(\""+tipo_print+"\", ");
         for(Expr e:exprlist){
-            if(e.getTipoexpr().equals("ConstLeaf")) {
-                ConstLeaf cl = (ConstLeaf) e;
-                if(cl.getConstType().equals("string_const")) {
-                    writer.print("\"");
-                    printExpr(e);
-                    writer.print("\"");
-                }
-            }else if(!e.getType().equals("bool"))
+
+            if(!e.getType().equals("bool"))
                     printExpr(e);
                 else {
-                    writer.print("castBoolToString(");
+                    writer.print("castboolToString(");
                     printExpr(e);
                     writer.print(")");
                 }
@@ -681,6 +707,7 @@ public class CTranslatorVisitor implements Visitor{
                 writer.write(", ");
         }
         writer.print(");");
+
         return true;
     }
 

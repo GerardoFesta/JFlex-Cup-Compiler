@@ -1,0 +1,4 @@
+start: def stringtester():void {
+    float c << 1.9;
+    ("La stringa " & 1 & " contiene " & true & " " &c) -->!;
+}

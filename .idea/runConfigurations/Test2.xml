@@ -1,10 +1,10 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Test2" type="Application" factoryName="Application" folderName="New Folder">
+  <configuration default="false" name="Test2" type="Application" factoryName="Application">
     <option name="ALTERNATIVE_JRE_PATH" value="$PROJECT_DIR$/../../../../Program Files/Java/jdk-13.0.2" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="Tester" />
     <module name="festa-foudal_es5" />
-    <option name="PROGRAM_PARAMETERS" value="&quot;./testfiles/test2.txt&quot;" />
+    <option name="PROGRAM_PARAMETERS" value="&quot;./test_files/test2.txt&quot;" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

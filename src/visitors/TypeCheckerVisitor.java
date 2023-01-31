@@ -17,11 +17,15 @@ public class TypeCheckerVisitor implements Visitor{
     Stack<SymbolTable> stack;
     TablesContainer tablesContainer;
     MethodEntry current_function;
+    boolean function_has_returned;
+
+    String savePath;
 
 
-    public TypeCheckerVisitor() {
+    public TypeCheckerVisitor(String savePath) {
         this.stack = new Stack<SymbolTable>();
         tablesContainer = new TablesContainer();
+        this.savePath=savePath;
     }
 
     private void loadScope(SymbolTable tab){
@@ -55,13 +59,13 @@ public class TypeCheckerVisitor implements Visitor{
 
         nodo.getMainFunDecl().accept(this);
 
-        ArrayList<Declaration> dichiarazioni2 = nodo.getDeclList1();
+        ArrayList<Declaration> dichiarazioni2 = nodo.getDeclList2();
         for(Declaration d:dichiarazioni2){
             d.accept(this);
         }
 
 
-        CTranslatorVisitor cvisitor = new CTranslatorVisitor("testC.c");
+        CTranslatorVisitor cvisitor = new CTranslatorVisitor(savePath);
         cvisitor.visit(nodo);
         return null;
     }
@@ -146,6 +150,10 @@ public class TypeCheckerVisitor implements Visitor{
         MethodEntry fun = (MethodEntry) tab;
         ArrayList<Param> formal_params = fun.getParameters();
         ArrayList<Expr> actual_params = nodo.getExprList();
+        if(actual_params == null && formal_params.isEmpty()){
+            nodo.setType(fun.getEntryType());
+            return fun.getEntryType();
+        }
         if(formal_params.size()!= actual_params.size())
             throw new Error(nome_fun+": expected "+ formal_params.size()+" parameters, got "+actual_params.size());
 
@@ -178,7 +186,11 @@ public class TypeCheckerVisitor implements Visitor{
     public Object visit(FunDecl nodo) {
         String nome_fun = nodo.getId().getId();
         current_function = (MethodEntry) lookup(nome_fun);
+        function_has_returned = false;
         nodo.getBody().accept(this);
+        if(!(function_has_returned || current_function.getEntryType().equals("void"))){
+            throw new Error("Function "+nome_fun+" has not returned. Expected " +current_function.getEntryType()+ " return");
+        }
         current_function = null;
         return null;
     }
@@ -208,6 +220,7 @@ public class TypeCheckerVisitor implements Visitor{
                 tipo_ritorno="float";
             if (!tipo_ritorno.equals(current_function.getEntryType()))
                 throw new Error("Returned "+tipo_ritorno+" in function "+current_function.getEntryName()+" while expecting "+current_function.getEntryType());
+            function_has_returned = true;
         }else{
             if(!current_function.getEntryType().equals("void"))
                 throw new Error("Returned void  in function "+current_function.getEntryName()+" while expecting "+current_function.getEntryType());
@@ -278,6 +291,9 @@ public class TypeCheckerVisitor implements Visitor{
         MethodEntry fun = (MethodEntry) tab;
         ArrayList<Param> formal_params = fun.getParameters();
         ArrayList<Expr> actual_params = nodo.getExprList();
+        if(actual_params == null && formal_params.isEmpty()){
+            return null;
+        }
         if(formal_params.size()!= actual_params.size())
             throw new Error(nome_fun+": expected "+ formal_params.size()+" parameters, got "+actual_params.size());
 
