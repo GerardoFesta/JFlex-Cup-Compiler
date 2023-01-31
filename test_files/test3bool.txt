@@ -16,4 +16,6 @@ start: def principale(boolean test):string{
     }else{
         ("L'espressione ",b1," = ",b2," ha risultato ", b3," che NON è uguale a quello dato in input, ovvero ",test)-->;
     }
+
+    return "ok";
 }

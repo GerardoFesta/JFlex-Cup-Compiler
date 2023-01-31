@@ -144,7 +144,7 @@ public class CTranslatorVisitor implements Visitor{
 
 
     public void printFunctionSignature(MethodEntry m){
-        System.out.println("PRINTING SIG");
+        //System.out.println("PRINTING SIG");
         writer.print("\n"+getTypeInC(m.getEntryType())+" "+m.getEntryName()+"(");
         String out="";
         int i=0;
@@ -163,9 +163,9 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(Program nodo) {
-        System.out.println("Entrato in"+ nodo.getClass());
+        //System.out.println("Entrato in"+ nodo.getClass());
         nodo.getSymtable().table.forEach((key, entry) -> {
-            System.out.println("PRINTING");
+            //System.out.println("PRINTING");
             if(entry.getEntrySpec().equals("fun"))
                 printFunctionSignature((MethodEntry) entry);
         });
@@ -275,7 +275,7 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(FunDecl nodo) {
-        System.out.println("Entrato in"+ nodo.getClass());
+        //System.out.println("Entrato in"+ nodo.getClass());
         MethodEntry m = (MethodEntry) lookup(nodo.getId().getId());
         writer.print("\n\n"+getTypeInC(m.getEntryType())+" "+m.getEntryName()+"(");
         String out="";
@@ -299,7 +299,7 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(VarDecl nodo) {
-        System.out.println("Entrato in"+ nodo.getClass());
+        //System.out.println("Entrato in"+ nodo.getClass());
         boolean terminata = true;
         boolean id_init_finito;
         for(IdInit idInit: nodo.getIdInitList()){
@@ -312,7 +312,7 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(IdInit nodo) {
-        System.out.println("Entrato in"+ nodo.getClass());
+        //System.out.println("Entrato in"+ nodo.getClass());
         VarEntry entry = (VarEntry) lookup(nodo.getId().getId());
         String prefisso_tipo="";
         if(entry.isAssigned())
@@ -341,7 +341,7 @@ public class CTranslatorVisitor implements Visitor{
     }
 
     private void printExpr(Expr e){
-        System.out.println("Entrato in PrintExpr");
+        //System.out.println("Entrato in PrintExpr");
 
         if(e instanceof IDLeaf) {
             IDLeaf id = (IDLeaf) e;
@@ -453,14 +453,14 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(BinaryOperation nodo) {
-        System.out.println("Entrato in"+ nodo.getClass());
+        //System.out.println("Entrato in"+ nodo.getClass());
         boolean b = (boolean) (nodo.getValue1().accept(this)) && (boolean)(nodo.getValue2().accept(this));
         return b;
     }
 
     @Override
     public Object visit(Body nodo) {
-        System.out.println("Entrato in"+ nodo.getClass());
+        //System.out.println("Entrato in"+ nodo.getClass());
 
         loadScope(nodo.getSymtable());
         nodo.getVarDeclList();
@@ -494,19 +494,19 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(ConstLeaf nodo) {
-        System.out.println("Entrato in"+ nodo.getClass());
+        //System.out.println("Entrato in"+ nodo.getClass());
         return true;
     }
 
     @Override
     public Object visit(FunCall nodo) {
-        System.out.println("Entrato in"+ nodo.getClass());
+        //System.out.println("Entrato in"+ nodo.getClass());
 
         return true;
     }
     @Override
     public Object visit(IDLeaf nodo) {
-        System.out.println("Entrato in"+ nodo.getClass());
+        //System.out.println("Entrato in"+ nodo.getClass());
         VarEntry entry = (VarEntry) lookup(nodo.getId());
         return entry.isDeclared();
     }
@@ -514,13 +514,13 @@ public class CTranslatorVisitor implements Visitor{
     @Override
     public Object visit(Type nodo) {
 
-        System.out.println("Entrato in"+ nodo.getClass());
+        //System.out.println("Entrato in"+ nodo.getClass());
         return getTypeInC(nodo.getTipo());
     }
 
     @Override
     public Object visit(UnaryOperation nodo) {
-        System.out.println("Entrato in"+ nodo.getClass());
+        //System.out.println("Entrato in"+ nodo.getClass());
         return nodo.getValue().accept(this);
     }
 
@@ -528,7 +528,7 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(AssignStat nodo) {
-        System.out.println("Entrato in"+ nodo.getClass());
+        //System.out.println("Entrato in"+ nodo.getClass());
 
         ArrayList<IDLeaf> idlist = nodo.getIdList();
         ArrayList<Expr> exprList = nodo.getExprList();
@@ -552,7 +552,7 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(ForStat nodo) {
-        System.out.println("Entrato in"+ nodo.getClass());
+        //System.out.println("Entrato in"+ nodo.getClass());
 
         IDLeaf id = nodo.getId();
         int val1 = Integer.parseInt(nodo.getInt_con1());
@@ -568,7 +568,7 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(IfStat nodo) {
-        System.out.println("Entrato in"+ nodo.getClass());
+        //System.out.println("Entrato in"+ nodo.getClass());
 
 
         Expr e = nodo.getExpr();
@@ -587,7 +587,7 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(WhileStat nodo) {
-        System.out.println("Entrato in"+ nodo.getClass());
+        //System.out.println("Entrato in"+ nodo.getClass());
 
         Expr e = nodo.getExpr();
         e.accept(this);
@@ -600,7 +600,7 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(FunCallStatement nodo) {
-        System.out.println("Entrato in"+ nodo.getClass());
+        //System.out.println("Entrato in"+ nodo.getClass());
 
         writer.write("\n"+tabulation+nodo.getId().getId()+"(");
         MethodEntry firma = (MethodEntry) lookup(nodo.getId().getId());
@@ -624,7 +624,7 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(ReadStat nodo) {
-        System.out.println("Entrato in"+ nodo.getClass());
+        //System.out.println("Entrato in"+ nodo.getClass());
 
 
         if(nodo.getStr_con()!=null)
@@ -662,7 +662,7 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(ReturnStatement nodo) {
-        System.out.println("Entrato in"+ nodo.getClass());
+        //System.out.println("Entrato in"+ nodo.getClass());
 
         writer.print("\n"+tabulation+"return ");
         if(nodo.getExpr()!=null)
@@ -675,7 +675,7 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(WriteStat nodo) {
-        System.out.println("Entrato in "+ nodo.getClass());
+        //System.out.println("Entrato in "+ nodo.getClass());
 
         ArrayList<Expr> exprlist = nodo.getExprList();
         String tipo_expr="";
@@ -715,7 +715,7 @@ public class CTranslatorVisitor implements Visitor{
 
     @Override
     public Object visit(ParDecl nodo) {
-        System.out.println("Entrato in"+ nodo.getClass());
+        //System.out.println("Entrato in"+ nodo.getClass());
 
         return null;
     }
