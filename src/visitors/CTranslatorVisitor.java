@@ -504,6 +504,8 @@ public class CTranslatorVisitor implements Visitor{
         //System.out.println("Entrato in"+ nodo.getClass());
         //Controllo se nella chiamata a funzione viene usata qualche var / espressione che contine var non ancora assegnata
         boolean isOkToCall = true;
+        if(nodo.getExprList() == null)
+            return true;
         for (Expr e:
                 nodo.getExprList()) {
 
