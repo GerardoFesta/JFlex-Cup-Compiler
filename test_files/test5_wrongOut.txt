@@ -1,0 +1,7 @@
+def modStringa(out string s):void{
+    s << s&"k";
+}
+
+start: def mainFun(string arg):void{
+    modStringa(arg&"p");
+}

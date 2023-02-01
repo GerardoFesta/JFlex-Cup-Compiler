@@ -9,6 +9,7 @@ import tables.stacktables.SymbolTable;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -244,7 +245,7 @@ public class CTranslatorVisitor implements Visitor{
                 out="";
             writer.print(out+"t"+i);
             i=i+1;
-            if(mainEntry.getParameters().size()-i>=1)
+            if(mainEntry.getParameters().size()-i>=0)
                 writer.print(", ");
         }
         writer.print(");");
@@ -501,8 +502,15 @@ public class CTranslatorVisitor implements Visitor{
     @Override
     public Object visit(FunCall nodo) {
         //System.out.println("Entrato in"+ nodo.getClass());
+        //Controllo se nella chiamata a funzione viene usata qualche var / espressione che contine var non ancora assegnata
+        boolean isOkToCall = true;
+        for (Expr e:
+                nodo.getExprList()) {
 
-        return true;
+            if(!(boolean) e.accept(this))
+                isOkToCall = false;
+        }
+        return isOkToCall;
     }
     @Override
     public Object visit(IDLeaf nodo) {
