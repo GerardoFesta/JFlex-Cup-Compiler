@@ -47,12 +47,29 @@ void mainfun(){
 	}
 }
 ```
-optype1(PLUS, MINUS, TIMES, DIV, POW)
 
-|  | integer | real | bool | string |
-| --- | --- | --- | --- | --- |
-| integer | integer | real |
-| real | real | real |
-| bool |  |
-| string |
+TYPE SYSTEM
+
+Aggiunte al type system dato sul sito, le seguenti regole:
+
+READ
+![](docs/type_rules/Read.png)
+
+READ CON STRINGA
+![](docs/type_rules/ReadConStringa.png)
+
+WRITE
+![](docs/type_rules/Write.png)
+
+CHIAMATA A FUNZIONE CON RITORNO O SENZA E CON CONTROLLO PARAMETRI OUT
+![](docs/type_rules/FunCall_out_RitornoPROVA.png)
+![](docs/type_rules/FunCall_out_NoRitornoPROVA.png)
+
+Inerentemente alle regole di tipo, si riportano i casi limite per le tabelle optype1 e optype2
+presenti nel documento da Lei redatto.
+Tutte le operazioni di moltiplicazione, addizione, potenza, divisione, sono applicabili solo su interi e float.
+ Il risultato dell'operazione è float laddove almeno uno dei due operatori sia float, intero altrimenti.
+La concatenazione STR_CONC (&), è permessa non solo tra due stringhe, ma su tutti i tipi presenti nel linguaggio.
+ Ad esempio, è possibile usare STR_CONC su un intero e un float, ma il risultato sarà sempre una stringa.
+
 */
