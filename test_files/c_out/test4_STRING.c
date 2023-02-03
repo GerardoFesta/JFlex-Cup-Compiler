@@ -10,6 +10,8 @@ char * castintToString(int num) {   char *buffer = malloc(sizeof(char) * 9999999
 
 char * castfloatToString(float num) {   char *buffer = malloc(sizeof(char) * 1000000);   *buffer = '\0';   sprintf(buffer , "%f" ,num);   return buffer; }
 
+char * castcharToString(char num) {   char *buffer = malloc(sizeof(char) * 1000000);   *buffer = '\0';   sprintf(buffer , "%c" ,num);   return buffer; }
+
 char * castboolToString(int num) {   char *buffer = "true";   if(num == 0) { buffer = "false"; }   return buffer; }
 
 int castStringToint(char* num) { int ritorno; sscanf (num,"%d",&ritorno);   return ritorno; }
@@ -49,7 +51,9 @@ void stringtester(){
 
 	float c = 1.9;
 	int d = 2;
-	char* str1 = str_concat(str_concat(str_concat(str_concat(str_concat(str_concat("La stringa ", castintToString(1)), " contiene "), castboolToString(true)), " "), castfloatToString(c)), "ed è costruita con str_concat");
+	char k = ' ';
+	char test;
+	char* str1 = str_concat(str_concat(str_concat(str_concat(str_concat(str_concat(str_concat(str_concat(str_concat("La stringa ", castintToString(1)), " contiene "), castboolToString(true)), " "), castfloatToString(c)), castcharToString(k)), castcharToString('a')), "ed è costruita con str_concat"), castcharToString(k));
 	char* strinput;
 	printf("%s\n", str1);
 	printf("%s%d%s%s%d%s\n", "La stringa ", 2, " invece, contiene ", castboolToString(false), 2, " ed è costruita con la exprlist della scrittura");
@@ -57,8 +61,11 @@ void stringtester(){
 	addExclamationPoints(&str1);
 	printf("%s\n", "Adesso aggiungo tre punti esclamativi alla stringa 1 (sfruttando funzioni con parametro out). Il risultato è: ");
 	printf("%s\n", str1);
-	printf("%s", "Adesso dammi una stringa in input");
+	printf("%s", "Adesso dammi una parola in input: ");
 	strinput = leggiStringa();
 	addExclamationPoints(&strinput);
-	printf("%s\n", str_concat("E anche la tua stringa ha dei punti esclamativi: ", strinput));
+	printf("%s\n", str_concat("E anche la tua parola ha dei punti esclamativi: ", strinput));
+	printf("%s\n", "Adesso inserisci un carattere, per prova: ");
+	scanf(" %c", &test);
+	printf("%c\n", test);
 }

@@ -11,7 +11,9 @@ def addTwoExclamationPoints(out string s): void{
 start: def stringtester():void {
     float c << 1.9;
     integer d << 2;
-    string str1 << "La stringa " & 1 & " contiene " & true & " " &c & "ed è costruita con str_concat";
+    char k << ' ', test;
+
+    string str1 << "La stringa " & 1 & " contiene " & true & " " &c & k & 'a' & "ed è costruita con str_concat"&k;
     string strinput;
     (str1) -->!;
     ("La stringa ", 2, " invece, contiene ", false, 2, " ed è costruita con la exprlist della scrittura") -->!;
@@ -22,4 +24,7 @@ start: def stringtester():void {
     strinput <-- "Adesso dammi una parola in input: ";
     addExclamationPoints(strinput);
     ("E anche la tua parola ha dei punti esclamativi: " & strinput) -->!;
+    ("Adesso inserisci un carattere, per prova: ") -->!;
+    test <--;
+    (test) -->!;
 }

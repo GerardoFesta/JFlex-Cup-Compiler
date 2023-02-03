@@ -28,12 +28,14 @@ public class OperationRules {
         inferenceTable.put("pow-int-float", "float");
         inferenceTable.put("pow-float-float", "float");
         inferenceTable.put("str_concat-string-string", "string");
+        inferenceTable.put("str_concat-string-char", "string");
         inferenceTable.put("str_concat-string-int", "string");
         inferenceTable.put("str_concat-string-float", "string");
         inferenceTable.put("str_concat-string-bool", "string");
         inferenceTable.put("str_concat-int-string", "string");
         inferenceTable.put("str_concat-float-string", "string");
         inferenceTable.put("str_concat-bool-string", "string");
+        inferenceTable.put("str_concat-char-string", "string");
         inferenceTable.put("str_concat-int-int", "string");
         inferenceTable.put("str_concat-float-int", "string");
         inferenceTable.put("str_concat-bool-int", "string");
@@ -43,6 +45,13 @@ public class OperationRules {
         inferenceTable.put("str_concat-int-bool", "string");
         inferenceTable.put("str_concat-float-bool", "string");
         inferenceTable.put("str_concat-bool-bool", "string");
+        inferenceTable.put("str_concat-int-char", "string");
+        inferenceTable.put("str_concat-float-char", "string");
+        inferenceTable.put("str_concat-bool-char", "string");
+        inferenceTable.put("str_concat-char-int", "string");
+        inferenceTable.put("str_concat-char-float", "string");
+        inferenceTable.put("str_concat-char-bool", "string");
+        inferenceTable.put("str_concat-char-char", "string");
         inferenceTable.put("and-bool-bool", "bool");
         inferenceTable.put("or-bool-bool", "bool");
         inferenceTable.put("gt-int-int", "bool");

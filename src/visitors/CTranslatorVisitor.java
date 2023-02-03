@@ -87,6 +87,12 @@ public class CTranslatorVisitor implements Visitor{
                 "   sprintf(buffer , \"%f\" ,num);" +
                 "   return buffer; " +
                 "}\n");
+        writer.println("char * castcharToString(char num) {" +
+                "   char *buffer = malloc(sizeof(char) * 1000000);" +
+                "   *buffer = '\\0';" +
+                "   sprintf(buffer , \"%c\" ,num);" +
+                "   return buffer; " +
+                "}\n");
 
         writer.println("char * castboolToString(int num) {" +
                 "   char *buffer = \"true\";" +
@@ -99,6 +105,7 @@ public class CTranslatorVisitor implements Visitor{
                 " sscanf (num,\"%d\",&ritorno);" +
                 "   return ritorno; " +
                 "}\n");
+
 
         writer.println("float castStringTofloat(char* num) {" +
                 " float ritorno;"+
@@ -660,6 +667,7 @@ public class CTranslatorVisitor implements Visitor{
                 switch(tipo_id){
                     case "int":tipo_read="%d"; break;
                     case "float":tipo_read="%f"; break;
+                    case "char":tipo_read=" %c"; break;
                 }
                 writer.print("\n"+tabulation+"scanf(\""+tipo_read+"\", &");
                 printExpr(id);
@@ -696,6 +704,7 @@ public class CTranslatorVisitor implements Visitor{
                 case "float":tipo_print=tipo_print+"%f"; break;
                 case "string":tipo_print=tipo_print+"%s"; break;
                 case "bool":tipo_print=tipo_print+"%s"; break;
+                case "char":tipo_print=tipo_print+"%c"; break;
             }
         }
         if(nodo.getMode()==1)
