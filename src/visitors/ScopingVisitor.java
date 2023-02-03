@@ -49,7 +49,7 @@ public class ScopingVisitor implements Visitor{
         SymbolTable currentScope = stack.pop();
 
         if(currentScope.lookup(entry.getEntryName())!=null)
-            throw new Error("Variabile " + entry.getEntryName() + " già dichiarata");
+            throw new Error("Variable with name " + entry.getEntryName() + " already declared in the scope");
         else
             currentScope.add(entry.getEntryName(), entry);
 
@@ -59,9 +59,10 @@ public class ScopingVisitor implements Visitor{
 
     public void addFunId(MethodEntry entry){
         SymbolTable currentScope = stack.pop();
-
+        if(entry.getEntryName().equals("main"))
+            throw new Error("Error, cannot name a function \"main\"");
         if(currentScope.lookup(entry.getEntryName())!=null)
-            throw new Error("Funzione con nome " + entry.getEntryName() + " già dichiarata");
+            throw new Error("Function with name " + entry.getEntryName() + " was already declared");
         else
             currentScope.add(entry.getEntryName(), entry);
 

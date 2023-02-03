@@ -506,8 +506,7 @@ public class CTranslatorVisitor implements Visitor{
         boolean isOkToCall = true;
         if(nodo.getExprList() == null)
             return true;
-        for (Expr e:
-                nodo.getExprList()) {
+        for (Expr e: nodo.getExprList()) {
 
             if(!(boolean) e.accept(this))
                 isOkToCall = false;

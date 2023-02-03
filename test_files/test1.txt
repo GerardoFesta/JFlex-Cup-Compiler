@@ -10,6 +10,6 @@ integer x << 10;
 
 start: def mainfun(): void{
     if((1>1)=(1>2)) then{
-        testfun(1.0,2.0);
+        testfun(1,2.0);
     }
 }

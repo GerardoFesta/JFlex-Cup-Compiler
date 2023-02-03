@@ -24,41 +24,28 @@ char* caststringTostring(char* num) { return num; }
 char * leggiStringa() { char *buffer = malloc(sizeof(char) * 1000); scanf("%s" ,buffer);   return buffer; }
 bool leggibool(bool* b){char* str = leggiStringa();if(strcmp(str,"1")==0 || strcmp(str,"true")==0){   *b = true;   return 1;}if(strcmp(str,"0")==0 || strcmp(str,"false")==0){*b = false;return 0;}return -1;}
 
-void addTwoExclamationPoints(char* *s);
-void addExclamationPoints(char* *s);
-void stringtester();
-
-void addExclamationPoints(char* *s){
-
-	*s = str_concat(*s, "!");
-	addTwoExclamationPoints(&*s);
-}
-
-void addTwoExclamationPoints(char* *s){
-
-	*s = str_concat(*s, "!!");
-}
+void mainfun();
+int c = 10;
 
 int main(int argc, char* argv[]){
 
-	stringtester();
+	mainfun();
 }
 
 
-void stringtester(){
+void mainfun(){
 
-	float c = 1.9;
-	int d = 2;
-	char* str1 = str_concat(str_concat(str_concat(str_concat(str_concat(str_concat("La stringa ", castintToString(1)), " contiene "), castboolToString(true)), " "), castfloatToString(c)), "ed è costruita con str_concat");
-	char* strinput;
-	printf("%s\n", str1);
-	printf("%s%d%s%s%d%s\n", "La stringa ", 2, " invece, contiene ", castboolToString(false), 2, " ed è costruita con la exprlist della scrittura");
-	printf("%s\n", str_concat(str_concat(str_concat(str_concat(str_concat(str_concat("La stringa ", castintToString(3)), " contiene "), castboolToString(true)), " "), castfloatToString(c)), " ed è costruita con la str_concat direttamente nella scrittura"));
-	addExclamationPoints(&str1);
-	printf("%s\n", "Adesso aggiungo tre punti esclamativi alla stringa 1 (sfruttando funzioni con parametro out). Il risultato è: ");
-	printf("%s\n", str1);
-	printf("%s", "Adesso dammi una stringa in input");
-	strinput = leggiStringa();
-	addExclamationPoints(&strinput);
-	printf("%s\n", str_concat("E anche la tua stringa ha dei punti esclamativi: ", strinput));
+	int c = 9;
+	int f;
+	int d = 5;
+	int b = c;
+	int e = d;
+	printf("%s%d%s%d\n", "Fuori dal for, c e b dovrebbero valere 9 e 9 e valgono rispettivamente: ", c, " ", b);
+	printf("%s%d%s%d\n", "Invece, e e d dovrebbero valere 5 e 5 e valgono rispettivamente: ", e, " ", d);
+	for(int i = 3; i >= 1; i--){
+
+		int b = 1;
+		int c = b;
+		printf("%s%d%s%d\n", "Nel for, c e b dovrebbero valere 1 e 1 e valgono rispettivamente: ", c, " ", b);
+	}
 }

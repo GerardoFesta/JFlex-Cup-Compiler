@@ -1,0 +1,13 @@
+float a << 10;
+
+def stampa(float a):void{
+    ("Il numero è " & a)-->!;
+}
+
+start: def mainfun():void{
+    stampa(a);
+    for i<<1 to 3 loop{
+        float a << 150;
+        stampa(a);
+    }
+}

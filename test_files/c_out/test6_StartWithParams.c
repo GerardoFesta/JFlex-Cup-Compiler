@@ -24,7 +24,7 @@ char* caststringTostring(char* num) { return num; }
 char * leggiStringa() { char *buffer = malloc(sizeof(char) * 1000); scanf("%s" ,buffer);   return buffer; }
 bool leggibool(bool* b){char* str = leggiStringa();if(strcmp(str,"1")==0 || strcmp(str,"true")==0){   *b = true;   return 1;}if(strcmp(str,"0")==0 || strcmp(str,"false")==0){*b = false;return 0;}return -1;}
 
-void starter(int c);
+void starter(int a, int b, int *prova);
 int somma(int a, int b, int *res);
 
 int somma(int a, int b, int *res){
@@ -35,16 +35,16 @@ int somma(int a, int b, int *res){
 
 int main(int argc, char* argv[]){
 	int t1 = castStringToint(argv[1]);
+	int t2 = castStringToint(argv[2]);
+	int t3 = castStringToint(argv[3]);
 
-	starter(t1);
+	starter(t1, t2, &t3);
 }
 
 
-void starter(int c){
+void starter(int a, int b, int *prova){
 
-	int a;
-	int b = 10;
-	int res = somma(a+1, b, &c);
+	int res = somma(a, b, &*prova);
 	printf("%d%s%d%s%d\n", a, " + ", b, " = ", res);
-	printf("%s%d\n", "Ma con l'incremento è uguale a: ", c);
+	printf("%s%d\n", "Ma con l'incremento è uguale a: ", *prova);
 }

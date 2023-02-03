@@ -45,7 +45,7 @@ public class TypeCheckerVisitor implements Visitor{
             result = tab.lookup(simbolo);
             if(result!= null) return result;
         }
-        throw new Error(""+simbolo+" non è stato dichiarato");
+        throw new Error(""+simbolo+" has not been declared");
 
     }
 
@@ -119,7 +119,7 @@ public class TypeCheckerVisitor implements Visitor{
         String tipo1 = (String) nodo.getValue1().accept(this);
         String tipo2 = (String) nodo.getValue2().accept(this);
         if(OperationRules.getOpType(nodo.getOpType(), tipo1, tipo2) == null){
-            throw new Error ("Cannot run operation "+nodo.getOpType()+ " with types: "+tipo1+" and "+tipo2);
+            throw new Error ("Cannot execute operation "+nodo.getOpType()+ " with types: "+tipo1+" and "+tipo2);
         }
         nodo.setType(OperationRules.getOpType(nodo.getOpType(), tipo1, tipo2));
         return OperationRules.getOpType(nodo.getOpType(), tipo1, tipo2);
@@ -130,7 +130,7 @@ public class TypeCheckerVisitor implements Visitor{
         String tipo_expr = (String) nodo.getValue().accept(this);
         if(!nodo.getOpType().equals("par")) {
             if (OperationRules.getOpType(nodo.getOpType(), tipo_expr) == null) {
-                throw new Error("Cannot run operation " + nodo.getOpType() + " with type: " + tipo_expr);
+                throw new Error("Cannot execute operation " + nodo.getOpType() + " with type: " + tipo_expr);
             }
             nodo.setType(OperationRules.getOpType(nodo.getOpType(), tipo_expr));
             return OperationRules.getOpType(nodo.getOpType(), tipo_expr);
@@ -168,7 +168,7 @@ public class TypeCheckerVisitor implements Visitor{
             expr = actual_params.get(i);
             tipo_expr = (String) expr.accept(this);
             if(param.isOut() && !expr.getTipoexpr().equals("IDLeaf"))
-                throw new Error(nome_fun+": parameter "+param.getName()+" must be a variable, cannot be const");
+                throw new Error(nome_fun+": parameter "+param.getName()+" must be a variable");
             if(!tipo_expr.equals(tipo_param))
                 //Posso passare un iintero a un float
                 if(! (tipo_expr.equals("int") && tipo_param.equals("float")))
@@ -219,11 +219,11 @@ public class TypeCheckerVisitor implements Visitor{
             if(current_function.getEntryType().equals("float") && tipo_ritorno.equals("int"))
                 tipo_ritorno="float";
             if (!tipo_ritorno.equals(current_function.getEntryType()))
-                throw new Error("Returned "+tipo_ritorno+" in function "+current_function.getEntryName()+" while expecting "+current_function.getEntryType());
+                throw new Error("Returned "+tipo_ritorno+" in function "+current_function.getEntryName()+" while "+current_function.getEntryType()+" was expected");
             function_has_returned = true;
         }else{
             if(!current_function.getEntryType().equals("void"))
-                throw new Error("Returned void  in function "+current_function.getEntryName()+" while expecting "+current_function.getEntryType());
+                throw new Error("Returned void  in function "+current_function.getEntryName()+" while "+current_function.getEntryType()+" was expected");
         }
         return null;
     }
@@ -234,7 +234,7 @@ public class TypeCheckerVisitor implements Visitor{
         ArrayList<IDLeaf> idlist = nodo.getIdList();
         ArrayList<Expr> exprList = nodo.getExprList();
         if(idlist.size()!= exprList.size())
-            throw new Error("Size in assignment doesn't match");
+            throw new Error("Sizes of the assignments don't match");
         int i=0;
         TabEntry t;
         String tipo_expr;
@@ -246,7 +246,7 @@ public class TypeCheckerVisitor implements Visitor{
             if(t.getEntryType().equals("float") && tipo_expr.equals("int"))
                 tipo_expr="float";
             if(!tipo_expr.equals(t.getEntryType()))
-                throw new Error("Type mismatch in assignment. Cannot assign to "+t.getEntryName()+"-"+t.getEntryType()+" an expression of type "+tipo_expr);
+                throw new Error("Type mismatch in assignment. Cannot assign to "+t.getEntryName()+" of type "+t.getEntryType()+" an expression of type "+tipo_expr);
             i++;
         }
         return null;

@@ -1,4 +1,25 @@
+
+def addExclamationPoints( out string s):void{
+    s << s & "!";
+    addTwoExclamationPoints(s);
+}
+
+def addTwoExclamationPoints(out string s): void{
+    s << s & "!!";
+}
+
 start: def stringtester():void {
     float c << 1.9;
-    ("La stringa " & 1 & " contiene " & true & " " &c) -->!;
+    integer d << 2;
+    string str1 << "La stringa " & 1 & " contiene " & true & " " &c & "ed è costruita con str_concat";
+    string strinput;
+    (str1) -->!;
+    ("La stringa ", 2, " invece, contiene ", false, 2, " ed è costruita con la exprlist della scrittura") -->!;
+    ("La stringa " & 3 & " contiene " & true & " " &c & " ed è costruita con la str_concat direttamente nella scrittura") -->!;
+    addExclamationPoints(str1);
+    ("Adesso aggiungo tre punti esclamativi alla stringa 1 (sfruttando funzioni con parametro out). Il risultato è: ")-->!;
+    (str1)-->!;
+    strinput <-- "Adesso dammi una parola in input: ";
+    addExclamationPoints(strinput);
+    ("E anche la tua parola ha dei punti esclamativi: " & strinput) -->!;
 }

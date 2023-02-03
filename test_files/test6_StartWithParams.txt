@@ -3,12 +3,11 @@ def somma(integer a,b | out integer res):integer{
     return a+b;
 }
 
-start: def starter(integer c):void{
-    integer a;
-    integer res << somma(a+1,b,c);
-    integer b << 10;
+start: def starter(integer a, b | out integer prova):void{
+
+    integer res << somma(a,b,prova);
 
     (a, " + ", b, " = ", res)-->!;
-    ("Ma con l'incremento è uguale a: ",c)-->!;
+    ("Ma con l'incremento è uguale a: ",prova)-->!;
 
 }

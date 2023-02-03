@@ -1,0 +1,18 @@
+
+
+integer c << 10;
+
+start: def mainfun():void{
+    integer b << c;
+    integer c << 9;
+    integer e << d, f;
+    integer d << 5;
+    ("Fuori dal for, c e b dovrebbero valere 9 e 9 e valgono rispettivamente: ",c," ",b)-->!;
+    ("Invece, e e d dovrebbero valere 5 e 5 e valgono rispettivamente: ",e," ",d)-->!;
+
+    for i<<3 to 1 loop{
+        integer c<<b;
+        integer b<<1;
+        ("Nel for, c e b dovrebbero valere 1 e 1 e valgono rispettivamente: ",c," ",b)-->!;
+    }
+}
