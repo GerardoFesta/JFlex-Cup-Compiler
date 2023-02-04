@@ -53,17 +53,17 @@ TYPE SYSTEM
 Aggiunte al type system dato sul sito, le seguenti regole:
 
 READ
-![](docs/type_rules/Read.png)
+![ScreenShot](docs/type_rules/Read.png)
 
 READ CON STRINGA
-![](docs/type_rules/ReadConStringa.png)
+![ScreenShot](docs/type_rules/ReadConStringa.png)
 
 WRITE
-![](docs/type_rules/Write.png)
+![ScreenShot](docs/type_rules/Write.png)
 
 CHIAMATA A FUNZIONE CON RITORNO O SENZA E CON CONTROLLO PARAMETRI OUT
-![](docs/type_rules/FunCall_out_RitornoPROVA.png)
-![](docs/type_rules/FunCall_out_NoRitornoPROVA.png)
+![ScreenShot](docs/type_rules/FunCall_out_RitornoPROVA.png)
+![ScreenShot](docs/type_rules/FunCall_out_NoRitornoPROVA.png)
 
 Inerentemente alle regole di tipo, si riportano i casi limite per le tabelle optype1 e optype2
 presenti nel documento da Lei redatto.
