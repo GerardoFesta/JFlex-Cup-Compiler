@@ -26,50 +26,26 @@ char* caststringTostring(char* num) { return num; }
 char * leggiStringa() { char *buffer = malloc(sizeof(char) * 1000); scanf("%s" ,buffer);   return buffer; }
 bool leggibool(bool* b){char* str = leggiStringa();if(strcmp(str,"1")==0 || strcmp(str,"true")==0){   *b = true;   return 1;}if(strcmp(str,"0")==0 || strcmp(str,"false")==0){*b = false;return 0;}return -1;}
 
-void addTwoExclamationPoints(char* *s);
-void addExclamationPoints(char* *s);
-void stringtester();
-
-void addExclamationPoints(char* *s){
-
-	*s = str_concat(*s, "!");
-	addTwoExclamationPoints(&*s);
-}
-
-void addTwoExclamationPoints(char* *s){
-
-	*s = str_concat(*s, "!!");
-}
+void mainfun();
 
 int main(int argc, char* argv[]){
 
-	stringtester();
+	mainfun();
 }
 
 
-void stringtester(){
+void mainfun(){
 
-	float c = 1.9;
-	int d = 2;
-	char k = ' ';
-	char test;
-	char* str1 = str_concat(str_concat(str_concat(str_concat(str_concat(str_concat(str_concat(str_concat(str_concat("La stringa ", castintToString(1)), " contiene "), castboolToString(true)), " "), castfloatToString(c)), castcharToString(k)), castcharToString('a')), "ed è costruita con str_concat"), castcharToString(k));
-	char* strinput;
-	printf("%s\n", str1);
-	printf("%s%d%s%s%d%s\n", "La stringa ", 2, " invece, contiene ", castboolToString(false), 2, " ed è costruita con la exprlist della scrittura");
-	printf("%s\n", str_concat(str_concat(str_concat(str_concat(str_concat(str_concat("La stringa ", castintToString(3)), " contiene "), castboolToString(true)), " "), castfloatToString(c)), " ed è costruita con la str_concat direttamente nella scrittura"));
-	addExclamationPoints(&str1);
-	printf("%s\n", "Adesso aggiungo tre punti esclamativi alla stringa 1 (sfruttando funzioni con parametro out). Il risultato è: ");
-	printf("%s\n", str1);
-	printf("%s", "Adesso dammi una parola in input: ");
-	strinput = leggiStringa();
-	addExclamationPoints(&strinput);
-	printf("%s\n", str_concat("E anche la tua parola ha dei punti esclamativi: ", strinput));
-	printf("%s\n", "Adesso inserisci un carattere, per prova: ");
-	scanf(" %c", &test);
-	if((test=='c')){
+	int a = 1;
+	float b = 1.0;
+	if((a==b)){
 
-		printf("%s", "Hai scritto c");
+		printf("%d%s%f%s\n", a, " e ", b, " sono uguali");
 	}
-	printf("%c\n", test);
+	printf("%s%d\n", "2*2+1+3*3 =", 2*2+1+3*3);
+	printf("%s%d%s%s%f\n", "-", a, "+", "-b = ", -a+-b);
+	a = 5/2;
+	b = 5.0/2;
+	printf("%s%d%s%d\n", "La divisione intera tra ", 5, "e 2 è = ", a);
+	printf("%s%f%s%f\n", "La divisione NON intera tra ", 5.0, "e 2 è = ", b);
 }

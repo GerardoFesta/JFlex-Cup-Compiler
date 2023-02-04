@@ -1,5 +1,5 @@
 
-def somma(integer a, b): float
+def somma(float a, b): float
 {
 	return a+b;
 }
@@ -14,25 +14,47 @@ def moltiplicazione(float a,b): float
 	return a * b;
 }
 
+def moltiplicazioneViaSomma(integer a,b): float
+{
+	integer contatore<<0;
+	float risSomma<<0;
+	while(contatore!=b)loop{
+	    risSomma << somma(a,a);
+	    contatore << contatore+1;
+	}
+	return risSomma;
+
+}
+
+
+def divisioneIntera (integer a,b): integer
+{
+	return a / b;
+}
 def divisione (float a,b): float
 {
 	return a / b;
 }
 
+def potenza (float a,b): float
+{
+	return a^b;
+}
+
 def selectOp(out integer op): void
 {
-	op <-- "Inserisci l'operazione (1 somma, 2 sott, 3 molt, 4 div)";
+	op <-- "Inserisci l'operazione (1 somma, 2 sott, 3 molt, 4 div, 5 potenza, 6 fibonacci)";
 	return ;
 }
 
-def askContinue(out boolean continue):	void 
+def askContinue(out boolean continua):	void
 {
 	integer risposta;
 	risposta <-- "Vuoi continuare? (1 Si, 0 no)";
 	if(risposta = 1) then {
-		continue << true;
+		continua << true;
 	}else{
-		continue << false;
+		continua << false;
 	}
 	return ;
 }
@@ -48,20 +70,41 @@ start: def starter(): void
 	integer operazione;
 	boolean continua;
 	float num1, num2;
+	integer intnum1, intnum2;
 	continua << true;
 	while(continua) loop {
 		selectOp(operazione);
-		askNumbers(num1, num2);
+
 		if(operazione = 1) then{
-			(somma(num1, num2)) -->;
+		    askNumbers(num1, num2);
+			(somma(num1, num2)) -->!;
 		}else{
 			if(operazione = 2) then{
-				(differenza(num1, num2)) -->;
+				askNumbers(num1, num2);
+				(sottrazione(num1, num2)) -->!;
 			}else{
 				if(operazione = 3) then {
-					(moltiplicazione(num1, num2)) -->;
+					askIntNumbers(intnum1, intnum2);
+					(moltiplicazione(intnum1, intnum2)) -->!;
 				}else{
-					(divisione(num1,num2)) -->;
+                    if(operazione = 4) then {
+                        askIntNumbers(intnum1, intnum2);
+                        (divisioneIntera(intnum1,intnum2)) -->!;
+                    }else{
+                         if(operazione = 5) then {
+                             askNumbers(num1, num2);
+                             (potenza(intnum1,intnum2)) -->!;
+                         }else{
+                            if(operazione = 6) then {
+                                integer intnum1;
+                                intnum1 <-- "Inserisci un numero intero: ";
+                                (fibonacci(intnum1))-->!;
+                            }else{
+                                ("Hai inserito un numero non corretto!")-->!;
+                            }
+
+                         }
+                    }
 				}
 			}
 		}
@@ -69,8 +112,23 @@ start: def starter(): void
 		
 	
 	}
-	
-	
-	
+
+}
+
+
+def askIntNumbers(out integer n1, n2): void
+{
+    n1 <-- "Inserisci il primo numero INTERO: ";
+    n2 <-- "Inserisci il secondo numero INTERO: ";
+}
+
+def fibonacci(integer n):integer{
+    if(n=0) then{
+     return 0;
+    }
+    if(n=1) then {
+        return 1;
+    }
+    return fibonacci(n-1)+fibonacci(n-2);
 }
 

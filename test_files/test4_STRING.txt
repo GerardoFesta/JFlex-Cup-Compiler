@@ -26,5 +26,8 @@ start: def stringtester():void {
     ("E anche la tua parola ha dei punti esclamativi: " & strinput) -->!;
     ("Adesso inserisci un carattere, per prova: ") -->!;
     test <--;
+    if(test = 'c')then{
+        ("Hai scritto c")-->;
+    }
     (test) -->!;
 }

@@ -76,11 +76,13 @@ public class OperationRules {
         inferenceTable.put("eq-float-float", "bool");
         inferenceTable.put("eq-string-string", "bool");
         inferenceTable.put("eq-bool-bool", "bool");
+        inferenceTable.put("eq-char-char", "bool");
         inferenceTable.put("ne-int-int", "bool");
         inferenceTable.put("ne-int-float", "bool");
         inferenceTable.put("ne-float-int", "bool");
         inferenceTable.put("ne-float-float", "bool");
         inferenceTable.put("ne-bool-bool", "bool");
+        inferenceTable.put("ne-char-char", "bool");
         inferenceTable.put("minus-int", "int");
         inferenceTable.put("minus-float", "float");
         inferenceTable.put("not-bool", "bool");

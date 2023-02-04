@@ -10,6 +10,8 @@ char * castintToString(int num) {   char *buffer = malloc(sizeof(char) * 9999999
 
 char * castfloatToString(float num) {   char *buffer = malloc(sizeof(char) * 1000000);   *buffer = '\0';   sprintf(buffer , "%f" ,num);   return buffer; }
 
+char * castcharToString(char num) {   char *buffer = malloc(sizeof(char) * 1000000);   *buffer = '\0';   sprintf(buffer , "%c" ,num);   return buffer; }
+
 char * castboolToString(int num) {   char *buffer = "true";   if(num == 0) { buffer = "false"; }   return buffer; }
 
 int castStringToint(char* num) { int ritorno; sscanf (num,"%d",&ritorno);   return ritorno; }

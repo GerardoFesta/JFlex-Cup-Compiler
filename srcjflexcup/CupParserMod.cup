@@ -152,7 +152,6 @@ ExprList ::= Expr:e {:RESULT = new ArrayList<Expr>(); RESULT.add(e);:}
 	| Expr:e COMMA ExprList:l {:RESULT = l; RESULT.add(0, e);:}; //0 è per la posizione
 
 
-/* Modifica: le prime produzioni originali di Expr sono quelle di const, per evitare conflitti, Expr va in const */
 Expr ::= INTEGER_CONST:c {:RESULT= new ConstLeaf("integer_const", c.toString());:}
     | REAL_CONST:c   {:RESULT= new ConstLeaf("real_const", c.toString());:}
     | TRUE             {:RESULT= new ConstLeaf("boolean_const", "true");:}
