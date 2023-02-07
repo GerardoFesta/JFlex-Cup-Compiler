@@ -92,6 +92,9 @@ CHAR_CONST = \'[^"'"]\'
     stringTable.put("not", symbol(sym.NOT));
     stringTable.put("return", symbol(sym.RETURN));
     stringTable.put("then", symbol(sym.THEN));
+    stringTable.put("switch", symbol(sym.SWITCH));
+    stringTable.put("stop", symbol(sym.STOP));
+    stringTable.put("end", symbol(sym.END));
 
 
 %init}

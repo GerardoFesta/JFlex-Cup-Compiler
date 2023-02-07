@@ -1,0 +1,8 @@
+start: def mainfun():void{
+    integer i<<3;
+    switch(i+3)
+        1: ("uno")-->; stop;
+        2: ("due")-->; stop;
+        3: ("tre")-->; stop;
+    end switch;
+}

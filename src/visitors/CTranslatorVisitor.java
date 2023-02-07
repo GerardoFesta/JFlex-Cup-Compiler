@@ -729,6 +729,30 @@ public class CTranslatorVisitor implements Visitor{
         return true;
     }
 
+    @Override
+    public Object visit(SwitchStat nodo) {
+        writer.print("\n"+tabulation+"switch(");
+        printExpr(nodo.getSwitchArg());
+        writer.print("){");
+        tabulation=tabulation+"\t";
+        nodo.getCaseList().forEach(aCase -> aCase.accept(this));
+        tabulation = tabulation.substring(0,tabulation.length()-1);
+        writer.print("\n"+tabulation+"}");
+        return true;
+
+    }
+
+    @Override
+    public Object visit(Case nodo) {
+        writer.print("\n"+tabulation+"case ");
+        tabulation=tabulation+"\t";
+        printExpr(nodo.getConstLeaf());
+        writer.print(": ");
+        nodo.getStatList().forEach(stat -> stat.accept(this));
+        writer.print("\n"+tabulation+"break;");
+        tabulation = tabulation.substring(0,tabulation.length()-1);
+        return true;
+    }
 
 
     @Override

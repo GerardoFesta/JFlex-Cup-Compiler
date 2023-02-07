@@ -1,0 +1,7 @@
+start: def mainfun():void{
+    integer i;
+    switch(i)
+        2: x<<"uno"; stop;
+        3: ("due")-->; stop;
+    end switch;
+}

@@ -1,0 +1,10 @@
+
+start: def mainfun():void{
+    integer i<<1;
+    var a<<1, b<<2;
+    switch(i)
+        1: (a*4)-->; a<<a+1; stop;
+        2: a<< b+3; stop;
+        3: (3)-->; stop;
+    end switch;
+}

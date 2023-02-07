@@ -44,9 +44,11 @@ public interface sym {
   public static final int PIPE = 31;
   public static final int VOID = 12;
   public static final int EQ = 40;
+  public static final int SWITCH = 55;
   public static final int TIMES = 44;
   public static final int COLON = 28;
   public static final int ELSE = 5;
+  public static final int STOP = 56;
   public static final int READ = 32;
   public static final int TO = 16;
   public static final int WHILE = 6;
@@ -55,6 +57,7 @@ public interface sym {
   public static final int THEN = 54;
   public static final int REAL_CONST = 52;
   public static final int NE = 37;
+  public static final int END = 57;
   public static final int LPAR = 24;
   public static final int STRING = 9;
   public static final int DEF = 13;
@@ -118,7 +121,10 @@ public interface sym {
   "STRING_CONST",
   "REAL_CONST",
   "UMINUS",
-  "THEN"
+  "THEN",
+  "SWITCH",
+  "STOP",
+  "END"
   };
 }
 

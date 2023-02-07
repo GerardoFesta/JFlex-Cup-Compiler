@@ -283,4 +283,17 @@ public class ScopingVisitor implements Visitor{
     public Object visit(WriteStat nodo) {
         return null;
     }
+
+    @Override
+    public Object visit(SwitchStat nodo) {
+        ArrayList<Case> caseList = nodo.getCaseList();
+        if(caseList.size()<3)
+            throw new Error("There must be at least 3 cases in the switch, you used "+caseList.size());
+        return null;
+    }
+
+    @Override
+    public Object visit(Case nodo) {
+        return null;
+    }
 }

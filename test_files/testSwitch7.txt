@@ -1,0 +1,9 @@
+start: def mainfun():void{
+    char c<<'t';
+
+    switch(c)
+        't':(c)-->!; stop;
+        'a': stop;
+        'b': stop;
+    end switch;
+}

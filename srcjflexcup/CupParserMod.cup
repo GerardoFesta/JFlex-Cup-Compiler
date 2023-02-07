@@ -4,7 +4,7 @@ import nodes.*;
 /* Terminals Declarations */
 terminal MAIN, IF, VAR, ELSE, WHILE, INT, FLOAT, STRING, BOOL, CHAR, VOID, DEF, OUT, FOR, TO, LOOP, TRUE, FALSE, AND, OR, NOT, RETURN;
 terminal LPAR, RPAR, LBRAC, RBRAC, COLON, COMMA, SEMI, PIPE, READ, WRITE, WRITELN, LT, GT, NE, LE, GE, EQ, ASSIGN, PLUS, MINUS, TIMES, DIV, POW, STR_CONCAT;
-terminal String ID, CHAR_CONST, INTEGER_CONST, STRING_CONST, REAL_CONST, UMINUS, THEN;
+terminal String ID, CHAR_CONST, INTEGER_CONST, STRING_CONST, REAL_CONST, UMINUS, THEN, SWITCH, STOP, END;
 
 nonterminal Program Program;
 nonterminal VarDecl VarDecl;
@@ -30,7 +30,9 @@ nonterminal AssignStat AssignStat;
 nonterminal WhileStat WhileStat;
 nonterminal FunCall FunCall;
 nonterminal Body Else;
-
+nonterminal SwitchStat SwitchStat;
+nonterminal Case Case;
+nonterminal ArrayList<Case> CaseList;
 
 precedence left OR;
 precedence left AND;
@@ -122,7 +124,16 @@ Stat ::= IfStat:s {:RESULT = s;:}
     | WhileStat:s {:RESULT = s;:}
 	| FunCall:f SEMI {:RESULT = new FunCallStatement(f);:}
 	| RETURN Expr:e SEMI {:RESULT = new ReturnStatement(e); :}
-	| RETURN SEMI {:RESULT = new ReturnStatement(); :};
+	| RETURN SEMI {:RESULT = new ReturnStatement(); :}
+	|SwitchStat:s SEMI{:RESULT = s;:};
+
+SwitchStat ::= SWITCH LPAR ID:id RPAR CaseList:cl END SWITCH {:RESULT = new SwitchStat(new IDLeaf(id.toString()),cl);:};
+
+CaseList::= Case:c CaseList:cl {:RESULT = cl; RESULT.add(0,c);:}
+           | /* empty */ {:RESULT = new ArrayList<Case>();:};
+
+Case ::= Const:c COLON StatList:sl STOP SEMI {:RESULT = new Case(c, sl);:}
+        | Const:c COLON STOP SEMI  {:RESULT = new Case(c, new ArrayList<Stat>());:};
 
 IfStat ::= IF Expr:ex THEN Body:b Else:e {:RESULT = new IfStat(ex,b,e); :};
 

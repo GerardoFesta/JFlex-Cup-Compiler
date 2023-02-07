@@ -1,0 +1,21 @@
+start: def mainfun():void{
+    integer a;
+    var b<<"ciao ";
+
+    switchfun(a,b);
+    (b)-->!;
+}
+
+def switchfun(out integer a|out string b):void{
+    a<--"Insersci un numero intero tra 1 e 5";
+    switch(a)
+        1: b<< b & 10; stop;
+        2: b<<b & 20; stop;
+        3: b<<b & 30; stop;
+        4: b<<b & 40; stop;
+        5: b<<b & 50; stop;
+        6: stop;
+    end switch;
+
+}
+

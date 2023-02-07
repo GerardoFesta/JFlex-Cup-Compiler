@@ -362,4 +362,24 @@ public class TypeCheckerVisitor implements Visitor{
         return null;
     }
 
+    @Override
+    public Object visit(SwitchStat nodo) {
+        String tipo_arg = (String) nodo.getSwitchArg().accept(this);
+        ArrayList<Case> caseList= nodo.getCaseList();
+        caseList.forEach(aCase ->{
+            aCase.setCaseExpectedType(tipo_arg);
+            aCase.accept(this);
+        });
+        return null;
+    }
+
+    @Override
+    public Object visit(Case nodo) {
+       String tipo_costante = (String) nodo.getConstLeaf().accept(this);
+       if(!tipo_costante.equals(nodo.getCaseExpectedType()))
+           throw new Error("Type mismatch: Case costant has a different type ("+tipo_costante+") than the switch argument ("+nodo.getCaseExpectedType()+").");
+       nodo.getStatList().forEach(stat -> stat.accept(this));
+       return null;
+    }
+
 }

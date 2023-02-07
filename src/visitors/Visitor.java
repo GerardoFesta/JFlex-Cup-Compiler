@@ -25,7 +25,8 @@ public interface Visitor {
     public Object visit(WhileStat nodo);
     public Object visit(WriteStat nodo);
 
-
+    public Object visit(SwitchStat nodo);
+    public Object visit(Case nodo);
 
 
 

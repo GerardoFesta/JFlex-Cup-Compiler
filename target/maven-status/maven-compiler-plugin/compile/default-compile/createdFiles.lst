@@ -7,6 +7,7 @@ tables\entries\VarEntry.class
 nodes\ForStat.class
 tables\entries\Param.class
 tables\stacktables\SymbolTable.class
+nodes\Case.class
 nodes\Declaration.class
 esercitazione5\parser.class
 tables\entries\TabEntry.class
@@ -32,6 +33,7 @@ nodes\UnaryOperation.class
 tables\stacktables\TablesContainer.class
 visitors\TypeCheckerVisitor.class
 nodes\AssignStat.class
+nodes\SwitchStat.class
 nodes\IfStat.class
 tables\OperationRules.class
 esercitazione5\sym.class
