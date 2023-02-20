@@ -362,4 +362,41 @@ public class TypeCheckerVisitor implements Visitor{
         return null;
     }
 
+    @Override
+    public Object visit(LetStat nodo) {
+        loadScope(nodo.getSymtable());
+        VarDecl letdecl = nodo.getLetDecl();
+        Expr expr1 = nodo.getExpr1();
+        ArrayList<Stat> statList1 = nodo.getStatList1();
+        ArrayList<SingleWhen> whenList = nodo.getWhenList();
+        ArrayList<Stat> otherList = nodo.getOtherStatList();
+
+        letdecl.accept(this);
+        String tipo_primobool = (String) expr1.accept(this);
+        if(!tipo_primobool.equals("bool")){throw  new Error ("tipo 1 must be bool");}
+        for(Stat s1 : statList1){
+            s1.accept(this);
+        }
+        if(whenList.isEmpty()){throw  new Error ("dotwhile  at least 1");}
+        for(SingleWhen sw : whenList){
+            if(sw != null ) {
+                String tipo_bool = (String) sw.getEspressione().accept(this);
+                if (!tipo_bool.equals("bool")) {
+                    throw new Error("tipo  must be bool");
+                }
+                for (Stat s : sw.getStatList()) {
+                    s.accept(this);
+                }
+            }
+        }
+        for(Stat s3 : otherList){
+            s3.accept(this);
+        }
+        exitScope();
+
+        return  null;
+    }
+
+
+
 }

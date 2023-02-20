@@ -9,6 +9,7 @@ tables\entries\Param.class
 tables\stacktables\SymbolTable.class
 nodes\Declaration.class
 esercitazione5\parser.class
+nodes\LetStat.class
 tables\entries\TabEntry.class
 nodes\Expr.class
 nodes\VarDecl.class
@@ -17,6 +18,7 @@ visitors\XmlVisitor.class
 visitors\ScopingVisitor.class
 nodes\BinaryOperation.class
 nodes\FunCallStatement.class
+nodes\SingleWhen.class
 nodes\FunCall.class
 nodes\ConstLeaf.class
 nodes\IDLeaf.class

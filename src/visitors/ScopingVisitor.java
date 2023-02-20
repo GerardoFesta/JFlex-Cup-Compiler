@@ -283,4 +283,42 @@ public class ScopingVisitor implements Visitor{
     public Object visit(WriteStat nodo) {
         return null;
     }
+
+    @Override
+    public Object visit(LetStat nodo) {
+        enterScope();
+        VarDecl letdecl = nodo.getLetDecl();
+        Expr expr1 = nodo.getExpr1();
+        ArrayList<Stat> statList1 = nodo.getStatList1();
+        ArrayList<SingleWhen> whenList = nodo.getWhenList();
+
+        ArrayList<Stat> otherList = nodo.getOtherStatList();
+
+        letdecl.accept(this);
+        expr1.accept(this);
+        for(Stat s1 : statList1){
+            s1.accept(this);
+        }
+
+        System.out.println(whenList);
+        for(SingleWhen sw : whenList){
+
+            if(sw!= null) {
+                Expr expr = sw.getEspressione();
+                expr.accept(this);
+                for (Stat s : sw.getStatList()) {
+                    s.accept(this);
+                }
+            }
+        }
+
+        for(Stat s3 : otherList){
+            s3.accept(this);
+        }
+        SymbolTable letTable = exitScope();
+        nodo.setSymtable(letTable);
+        return letTable;
+    }
+
+
 }

@@ -8,65 +8,77 @@ package esercitazione5;
 /** CUP generated interface containing symbol constants. */
 public interface sym {
   /* terminals */
-  public static final int CHAR_CONST = 49;
-  public static final int POW = 46;
-  public static final int CHAR = 11;
-  public static final int GE = 39;
-  public static final int UMINUS = 53;
-  public static final int INTEGER_CONST = 50;
-  public static final int SEMI = 30;
-  public static final int INT = 7;
-  public static final int OUT = 14;
-  public static final int RBRAC = 27;
-  public static final int MINUS = 43;
-  public static final int FOR = 15;
-  public static final int WRITE = 33;
-  public static final int NOT = 22;
-  public static final int AND = 20;
-  public static final int LT = 35;
-  public static final int RPAR = 25;
-  public static final int OR = 21;
-  public static final int BOOL = 10;
-  public static final int COMMA = 29;
-  public static final int DIV = 45;
-  public static final int PLUS = 42;
-  public static final int LOOP = 17;
-  public static final int ASSIGN = 41;
+  public static final int CHAR_CONST = 55;
+  public static final int POW = 52;
+  public static final int CHAR = 17;
+  public static final int GE = 45;
+  public static final int UMINUS = 59;
+  public static final int INTEGER_CONST = 56;
+  public static final int SEMI = 36;
+  public static final int OTHERWISEDO = 8;
+  public static final int INT = 13;
+  public static final int OUT = 20;
+  public static final int RBRAC = 33;
+  public static final int MINUS = 49;
+  public static final int FOR = 21;
+  public static final int WRITE = 39;
+  public static final int NOT = 28;
+  public static final int AND = 26;
+  public static final int LT = 41;
+  public static final int RPAR = 31;
+  public static final int OR = 27;
+  public static final int COMMA = 35;
+  public static final int BOOL = 16;
+  public static final int DOTLOOP = 6;
+  public static final int DIV = 51;
+  public static final int GODOTWHEN = 5;
+  public static final int PLUS = 48;
+  public static final int LOOP = 23;
+  public static final int ASSIGN = 47;
+  public static final int WRITELN = 40;
   public static final int MAIN = 2;
-  public static final int IF = 3;
-  public static final int WRITELN = 34;
-  public static final int ID = 48;
-  public static final int LE = 38;
+  public static final int IF = 9;
+  public static final int ID = 54;
+  public static final int DOT = 3;
+  public static final int LE = 44;
   public static final int EOF = 0;
-  public static final int RETURN = 23;
-  public static final int TRUE = 18;
+  public static final int RETURN = 29;
+  public static final int TRUE = 24;
   public static final int error = 1;
-  public static final int PIPE = 31;
-  public static final int VOID = 12;
-  public static final int EQ = 40;
-  public static final int TIMES = 44;
-  public static final int COLON = 28;
-  public static final int ELSE = 5;
-  public static final int READ = 32;
-  public static final int TO = 16;
-  public static final int WHILE = 6;
-  public static final int STR_CONCAT = 47;
-  public static final int FLOAT = 8;
-  public static final int THEN = 54;
-  public static final int REAL_CONST = 52;
-  public static final int NE = 37;
-  public static final int LPAR = 24;
-  public static final int STRING = 9;
-  public static final int DEF = 13;
-  public static final int LBRAC = 26;
-  public static final int FALSE = 19;
-  public static final int STRING_CONST = 51;
-  public static final int GT = 36;
-  public static final int VAR = 4;
+  public static final int PIPE = 37;
+  public static final int VOID = 18;
+  public static final int EQ = 46;
+  public static final int TIMES = 50;
+  public static final int COLON = 34;
+  public static final int ELSE = 11;
+  public static final int READ = 38;
+  public static final int TO = 22;
+  public static final int WHILE = 12;
+  public static final int STR_CONCAT = 53;
+  public static final int LET = 4;
+  public static final int FLOAT = 14;
+  public static final int THEN = 60;
+  public static final int REAL_CONST = 58;
+  public static final int NE = 43;
+  public static final int LPAR = 30;
+  public static final int STRING = 15;
+  public static final int DEF = 19;
+  public static final int LBRAC = 32;
+  public static final int FALSE = 25;
+  public static final int STRING_CONST = 57;
+  public static final int GT = 42;
+  public static final int VAR = 10;
+  public static final int DOTWHEN = 7;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
   "MAIN",
+  "DOT",
+  "LET",
+  "GODOTWHEN",
+  "DOTLOOP",
+  "DOTWHEN",
+  "OTHERWISEDO",
   "IF",
   "VAR",
   "ELSE",

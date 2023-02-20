@@ -168,6 +168,11 @@ public class XmlVisitor implements Visitor{
     }
 
     @Override
+    public Object visit(LetStat nodo) {
+        return null;
+    }
+
+    @Override
     public Object visit(AssignStat assignStat) {
         Element element = document.createElement(assignStat.getTipo());
         ArrayList<IDLeaf> idList = assignStat.getIdList();

@@ -70,6 +70,12 @@ CHAR_CONST = \'[^"'"]\'
 %init{
     stringTable = new HashMap<>();
 
+    stringTable.put("let", symbol(sym.LET));
+    stringTable.put("godotwhen", symbol(sym.GODOTWHEN));
+    stringTable.put("dotloop", symbol(sym.DOTLOOP));
+    stringTable.put("dotwhen", symbol(sym.DOTWHEN));
+    stringTable.put("dototherwisedotdo", symbol(sym.OTHERWISEDO));
+
     stringTable.put("if", symbol(sym.IF));   // inserimento delle parole chiavi nella stringTable per evitare di scrivere un diagramma di transizione per ciascuna di esse (le parole chiavi verranno "catturate" dal diagramma di transizione e gestite e di conseguenza). IF poteva anche essere associato ad una costante numerica
     stringTable.put("var", symbol(sym.VAR));
     stringTable.put("else", symbol(sym.ELSE));
@@ -130,6 +136,7 @@ CHAR_CONST = \'[^"'"]\'
     "^"                  {return symbol(sym.POW);}
     "&"                  {return symbol(sym.STR_CONCAT);}
     "start:"           {return symbol(sym.MAIN);}
+     "\."                {return symbol(sym.DOT);}
 
 
     {INTEGER_CONST}         {return symbol(sym.INTEGER_CONST, yytext());}

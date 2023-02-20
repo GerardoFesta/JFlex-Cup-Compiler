@@ -729,6 +729,56 @@ public class CTranslatorVisitor implements Visitor{
         return true;
     }
 
+    @Override
+    public Object visit(LetStat nodo) {
+        loadScope(nodo.getSymtable());
+        VarDecl letdecl = nodo.getLetDecl();
+        Expr expr1 = nodo.getExpr1();
+        ArrayList<Stat> statList1 = nodo.getStatList1();
+        ArrayList<SingleWhen> whenList = nodo.getWhenList();
+        ArrayList<Stat> otherList = nodo.getOtherStatList();
+        writer.write("{");
+            letdecl.accept(this);
+
+            writer.write("\n\twhile(");
+            printExpr(expr1);
+            writer.write(")");
+
+                writer.write("{\n\t\t");
+                for(Stat s1: statList1){
+                    s1.accept(this);
+                }
+
+                 writer.write("};");
+
+////////////////////////
+        for(SingleWhen sw : whenList) {
+            if(sw!=null) {
+                writer.write("\n\twhile(");
+                printExpr(sw.getEspressione());
+                writer.write(")");
+
+                writer.write("{\n\t\t");
+                for (Stat s : sw.getStatList()) {
+                    s.accept(this);
+                }
+
+                writer.write("};");
+            }
+        }
+////////////
+
+        for(Stat s : otherList)
+        {
+            s.accept(this);
+        }
+
+        writer.write("}");
+        exitScope();
+        return true;
+    }
+
+
 
 
     @Override

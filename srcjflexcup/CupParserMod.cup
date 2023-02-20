@@ -2,7 +2,7 @@ import java.util.*;
 import nodes.*;
 
 /* Terminals Declarations */
-terminal MAIN, IF, VAR, ELSE, WHILE, INT, FLOAT, STRING, BOOL, CHAR, VOID, DEF, OUT, FOR, TO, LOOP, TRUE, FALSE, AND, OR, NOT, RETURN;
+terminal MAIN,DOT, LET, GODOTWHEN, DOTLOOP,DOTWHEN,OTHERWISEDO, IF, VAR, ELSE, WHILE, INT, FLOAT, STRING, BOOL, CHAR, VOID, DEF, OUT, FOR, TO, LOOP, TRUE, FALSE, AND, OR, NOT, RETURN;
 terminal LPAR, RPAR, LBRAC, RBRAC, COLON, COMMA, SEMI, PIPE, READ, WRITE, WRITELN, LT, GT, NE, LE, GE, EQ, ASSIGN, PLUS, MINUS, TIMES, DIV, POW, STR_CONCAT;
 terminal String ID, CHAR_CONST, INTEGER_CONST, STRING_CONST, REAL_CONST, UMINUS, THEN;
 
@@ -30,6 +30,11 @@ nonterminal AssignStat AssignStat;
 nonterminal WhileStat WhileStat;
 nonterminal FunCall FunCall;
 nonterminal Body Else;
+nonterminal LetStat LetStat;
+nonterminal SingleWhen SingleWhen;
+nonterminal ArrayList<SingleWhen> WhenList;
+
+
 
 
 precedence left OR;
@@ -115,6 +120,7 @@ StatList ::= Stat:s {:RESULT = new ArrayList<Stat>(); RESULT.add(s);:}
 
 
 Stat ::= IfStat:s {:RESULT = s;:}
+    | LetStat:s SEMI {:RESULT = s;:}
 	| ForStat:s {:RESULT = s;:}
 	| ReadStat:s SEMI {:RESULT = s;:}
 	| WriteStat:s SEMI {:RESULT = s;:}
@@ -123,6 +129,14 @@ Stat ::= IfStat:s {:RESULT = s;:}
 	| FunCall:f SEMI {:RESULT = new FunCallStatement(f);:}
 	| RETURN Expr:e SEMI {:RESULT = new ReturnStatement(e); :}
 	| RETURN SEMI {:RESULT = new ReturnStatement(); :};
+
+LetStat ::= LET VarDecl:v GODOTWHEN LPAR Expr:e1 RPAR DOTLOOP LBRAC StatList:sl1 RBRAC WhenList:wl OTHERWISEDO LBRAC StatList:sl3 RBRAC{:RESULT = new LetStat(v,e1,sl1,wl,sl3);:};
+
+SingleWhen ::= DOTWHEN LPAR Expr:e RPAR DOTLOOP LBRAC StatList:sl RBRAC {:RESULT = new SingleWhen(e,sl);:};
+
+WhenList ::= SingleWhen:sw {:RESULT = new ArrayList<SingleWhen>(); RESULT.add(sw);:}
+    |SingleWhen:sw WhenList:wl {:RESULT = wl; RESULT.add(0,sw);:};
+
 
 IfStat ::= IF Expr:ex THEN Body:b Else:e {:RESULT = new IfStat(ex,b,e); :};
 

@@ -1,0 +1,14 @@
+
+
+start: def mainfun(): void{
+    integer c<<4;
+
+
+    let integer a<<1, b<<2;
+    godotwhen ( c>b )dotloop{ ("uno")-->; c << c-1; }
+    dotwhen( a>b ) dotloop{ ("due")-->; a<<a+1;}
+
+    dototherwisedotdo{ ("sono uguali")-->;};
+
+
+}
