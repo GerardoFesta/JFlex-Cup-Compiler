@@ -5,10 +5,10 @@ start: def mainfun(): void{
 
 
     let integer a<<1, b<<2;
-    godotwhen ( c>b )dotloop{ ("uno")-->; c << c-1; }
-    dotwhen( a>b ) dotloop{ ("due")-->; a<<a+1;}
+    go.when ( c>b ).loop{ ("uno")-->; c << c-1; }
+    .when( a>b ) .loop{ ("due")-->; a<<a+1;}
 
-    dototherwisedotdo{ ("sono uguali")-->;};
+    .otherwise.do{ ("sono uguali")-->;};
 
 
 }
